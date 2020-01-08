@@ -30,7 +30,7 @@
     "konva": "^1.2.2",
     "less-middleware": "1.0.x",
     "mongoose": "latest",
-    "morgan": "~1.7.0",
+    "morgan": "~1.9.1",
     "multer": "^1.2.0",
     "multiparty": "latest",
     "serve-favicon": "~2.3.0",
