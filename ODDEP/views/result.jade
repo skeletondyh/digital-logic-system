@@ -1,0 +1,58 @@
+extends layout
+
+block content
+  div#topdiv.container-fluid(data-token = "#{submission.token}")
+    table.table.table-bordered
+      thead: tr
+        th ID
+        th 题目id
+        th UID
+        th 标签
+        th 状态
+        th 提交时间
+      tbody
+        tr
+          td #{submission.id}
+          td #{submission.pid}
+          td #{submission.uid}
+          td #{submission.tag}
+          td #{submission.status}
+          td #{submission.submit_time}
+    ul.nav.nav-tabs
+      li.active: a(href="#logview", data-toggle="tab") 日志
+      li: a(href="#codeview", data-toggle="tab") 程序查看
+      li: a(href="#dlink", data-toggle="tab") 文件下载
+      li: a(href="#preview", data-toggle="tab") 波形查看
+    div.tab-content
+      div#logview.tab-pane.fade.in.active
+        div.panel.panel-default
+          div.panel-heading 调试信息
+          div.panel-body
+            pre#debugInfo
+      div#codeview.tab-pane.fade
+        div.panel.panel-default
+          div.panel-heading VHDL代码
+          div.panel-body
+            pre#codePre.prettyprint.linenums.lang-vhdl
+      div#dlink.tab-pane.fade
+        div.list-group
+          a#linkCode.list-group-item 提交代码下载
+          - if (submission.pid < 1002)
+            a#linkMotivate.list-group-item testbench代码下载
+          a#linkVCD.list-group-item VCD波形文件下载
+      div#preview.tab-pane.fade
+        div.panel.panel-primary
+          div.panel-heading
+            div.btn-group.btn-group-lg
+              button#zoom_in.btn.btn-default.zoombtn 放大
+              button#zoom_out.btn.btn-default.zoombtn 缩小
+              button#zoom_origin.btn.btn-default.zoombtn 默认
+          div#root.panel-body(style="overflow:auto")
+            div#display_div
+              div#tooltip_div
+              canvas#waveform_canvas(width=0, height=0, tabIndex=0)
+
+block addscript
+  script $('nav').hide();
+  script(src="/javascripts/result-load.js")
+          

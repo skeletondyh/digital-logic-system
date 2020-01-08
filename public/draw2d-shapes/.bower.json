@@ -1,0 +1,27 @@
+{
+  "name": "draw2d-shapes",
+  "description": "",
+  "main": "dist/",
+  "authors": [
+    "Andreas Herz <a.herz@freegroup.de>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/freegroup/draw2d_js.shapes",
+  "moduleType": [],
+  "dependencies": {
+    "shufflejs": "^3.1.1",
+    "jsrender": "^0.9.74",
+    "shine": "^0.2.8",
+    "Ionicons": "ionicons#^2.0.1"
+  },
+  "version": "1.0.178",
+  "_release": "1.0.178",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.178",
+    "commit": "8547cf02a3634da7f02deb734f70f7667736d608"
+  },
+  "_source": "https://github.com/freegroup/draw2d_js.shapes.git",
+  "_target": "^1.0.178",
+  "_originalSource": "draw2d-shapes"
+}

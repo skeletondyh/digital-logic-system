@@ -1,0 +1,15 @@
+div#code.tab-pane.in.active
+  div.panel.panel-default
+    //- div.panel-heading
+    div.toolbar#toolbar
+      span.navbar-brand VHDL代码编辑
+      div.btn-group
+        div.btn-group
+          button.btn.btn-default#newFile New
+        div.btn-group
+          button.btn.btn-default(type="button")#saveFile Save
+    div.workspace#container
+      div.demo#filetree
+      div.sash.vertical
+      div.panel-body#vhdlACE
+    

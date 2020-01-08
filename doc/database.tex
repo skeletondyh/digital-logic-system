@@ -1,0 +1,144 @@
+\section{数据库}
+我们使用Mongodb作为服务器端使用的数据库，并使用Mongodb的ORM框架Mongoose来管理数据库，Mongodb是非关系型的数据库，但为了便于理解，在说明的时候借鉴了关系型数据库的相关概念。
+
+我们设计的数据库共分为user，example，homework，project，message和submit六个部分，下面分别进行具体说明。Mongodb会为每一条记录赋予一个“\_id”域作为主键，在下面的表格中省略。
+
+
+User表存储所有用户的信息。用户的用户名userName保证唯一。projectBox与homeworkBox中的元素为project记录的“\_id”，通过“\_id”可以到project表中查询到对应的project记录的详细信息。authority域为0表示普通用户，为1表示用户具有管理员权限。
+\begin{center}
+	\begin{longtable}{p{0.25\columnwidth}p{0.15\columnwidth}p{0.4\columnwidth}}
+		\toprule
+		 域名 & 类型 & 描述 \\
+		 \midrule
+		 userName & String & 用户名 \\
+		 password & String & 密码 \\
+		 uniquetoken & String & 用于标识当前在线用户的令牌 \\
+		 authority & Number & 用户权限 \\
+		 group & String & 用户所属分组 \\
+		 ifaccounts9 & Number & 是否通过accounts9账号登陆 \\
+		 projectBox & Array & 自定义项目列表 \\
+		 homeworkBox & Array & 学生作业列表 \\
+		 \bottomrule
+	\end{longtable}
+	\tcaption{User}
+\end{center}
+
+
+Project表记录了所有用户自定义项目(不包括管理员创建的样例)以及作业实例的详细信息。管理员布置作业以后，系统会在数据库的Homework表中添加一条作业记录，同时会在Project表中为每位学生生成一个作业实例，这样学生登陆后会在主页上看到一个空的作业项目，便可以开始进行操作。简单来说，Homework记录与Project记录为抽象与实例的关系。需要注意的是，Mongodb不要求Schema中的每一个域都在一条记录中出现，这为我们的实现带来了方便。如果一个Project记录的is\_homework为真，则意味着它为一个作业实例，这时这条记录中会出现homework域，score域以及hwSubmitBox域，而不会出现submitBox域；反之。
+
+无论是普通项目还是作业实例，其余的域的意义都是相同的。type域为0表示该项目为拖拽项目，为1则表示该项目为文本编辑器项目。compileStatus用一个数字来表示当前该项目的编译状态：0表示上次编译是成功的；1表示还没有进行过任何编译；2表示曾经编译成功，但是上一次编译失败；3表示历次编译都失败了。
+\begin{center}
+	\begin{longtable}{p{0.25\columnwidth}p{0.15\columnwidth}p{0.4\columnwidth}}
+		\toprule
+		 域名 & 类型 & 描述 \\
+		 \midrule
+		 projectName & String & 项目名称 \\
+		 author & ObjectId & 作者 \\
+		 type & Number & 项目类别 \\
+		 deleted & Boolean & 项目是否已被删除 \\
+		 createTime & Date & 项目创建时间 \\
+		 lastModifiedTime & Date & 上次修改时间 \\
+		 filePath & String & 项目文件路径 \\
+		 inputFile & String & 项目激励文件名 \\
+		 submitBox & Array & 提交列表(自定义项目) \\ 
+		 compileStatus & Number & 编译状态 \\ 
+		 topEntityName & String & 顶层实体名称 \\
+		 is\_homework & Boolean & 该项目是否是布置的作业 \\
+		 homework & ObjectId & 项目对应于哪个布置的作业 \\
+		 score & Number & 作业得分 \\
+		 hwSubmitBox & Array & 作业提交列表 \\ 
+		 input & Array & 输入端口 \\ 
+		 output & Array & 输出端口 \\
+ 		 lastSimulationTime & Number & 上次仿真时间 \\
+		 \bottomrule
+	\end{longtable}
+	\tcaption{Project}
+\end{center}
+
+
+Example表存储了管理员创建的样例信息。Example记录的内容与Project记录的内容是差不多的，但对二者的操作不同，同时也为了方便数据库的管理，因此将样例与一般的项目信息分别存储。
+\begin{center}
+	\begin{longtable}{p{0.25\columnwidth}p{0.15\columnwidth}p{0.4\columnwidth}}
+		\toprule
+		 域名 & 类型 & 描述 \\
+		 \midrule
+		 projectName & String & 样例名称 \\
+		 author & ObjectId & 样例作者 \\
+		 type & Number & 样例类别 \\
+		 deleted & Boolean & 样例是否已被删除 \\
+		 createTime & Date & 样例创建时间 \\
+		 lastModifiedTime & Date & 上次修改时间 \\
+		 filePath & String & 样例文件路径 \\
+		 inputFile & String & 样例激励文件名 \\
+		 submitBox & Array & 提交列表 \\ 
+		 compileStatus & Number & 编译状态 \\ 
+		 topEntityName & String & 顶层实体名称 \\
+		 ifvisibletoUser & Boolean & 样例是否对用户可见 \\
+		 isHomework & Boolean & 样例是否被作为作业发布 \\
+		 input & Array & 输入端口 \\ 
+		 output & Array & 输出端口 \\
+ 		 lastSimulationTime & Number & 上次仿真时间 \\
+		 \bottomrule
+	\end{longtable}
+	\tcaption{Example}
+\end{center}
+
+Homework表存储了管理员发布的作业信息。每个发布的作业都必须与已有的一条Example记录相关联，relateExample域即表示关联的Example记录的“\_id”，correspondProject数组中的元素即为这条作业记录所对应的全部作业实例。由于Homework记录与Example记录相关联，因此Homework记录中无需保存作业的类型(拖拽或文本编辑)及输入输出端口名等信息，直接在Example表中查询即可。
+\begin{center}
+	\begin{longtable}{p{0.25\columnwidth}p{0.15\columnwidth}p{0.4\columnwidth}}
+		\toprule
+		 域名 & 类型 & 描述 \\
+		 \midrule
+		 relateExample & ObjectId & 与此作业关联的样例 \\
+		 homeworkName & String & 作业名称 \\
+		 describe & String & 作业描述 \\
+		 deadline & Date & 作业提交截止日期 \\
+		 totalsimfiles & Number & 标准测评文件数目 \\
+		 author & ObjectId & 作业的布置者 \\
+		 correspondProject & Array & 与此作业关联的作业实例 \\
+		 \bottomrule
+	\end{longtable}
+	\tcaption{Homework}
+\end{center}
+
+Message表存储了管理员发布的课程公告，对所有学生可见，为了便于操作将这些信息单独用一张表存储。
+\begin{center}
+	\begin{longtable}{p{0.25\columnwidth}p{0.15\columnwidth}p{0.4\columnwidth}}
+		\toprule
+		 域名 & 类型 & 描述 \\
+		 \midrule
+		 author & ObjectId & 公告的发布者 \\
+		 createTime & Date & 公告发布时间 \\
+		 title & String & 公告的标题 \\
+ 		 content & String & 公告的内容 \\
+		 \bottomrule
+	\end{longtable}
+	\tcaption{Message}
+\end{center}
+
+Submit表中的一条记录对应于一次提交(样例，普通项目或是作业实例)，因为对Submit记录的访问均通过项目记录，不会直接对Submit表进行操作，因此将所有类型的Submit记录统一存储不会造成混乱。其中一些域的含义会在之后详细说明。
+\begin{center}
+	\begin{longtable}{p{0.25\columnwidth}p{0.15\columnwidth}p{0.4\columnwidth}}
+		\toprule
+		 域名 & 类型 & 描述 \\
+		 \midrule
+		 time & Date & 提交时间 \\
+		 project & ObjectId & 所属的项目 \\
+		 state & Number & 表示仿真是否完成 \\
+		 stdMsg & String & 编译仿真的标准输出 \\
+		 errMsg & String & 编译仿真的错误信息 \\
+		 filePath & String & 本次提交对应的文件路径 \\
+		 inputFile & String & 本次提交对应的激励文件名 \\
+		 simulateRes & String & 仿真结果文件名 \\
+		 \hline
+		 xtime & String & \multirow{4}*{用于测评的参数} \\
+		 lastlist & Array & ~ \\
+		 changelist & Array & ~ \\
+		 signalname & Array & ~ \\
+		 \hline
+		 score & Number & 本次提交得分 \\
+		 simulationTime & Number & 仿真次数 \\
+		 \bottomrule
+	\end{longtable}
+	\tcaption{Submit}
+\end{center}

@@ -1,0 +1,72 @@
+extends layout
+
+block addscript
+  script(src="/javascripts/status-pager.js")
+
+block content
+  div.container-fluid
+    div.well
+      form#car.form-inline(name="car", method="get", action="")
+        div.form-group.hidden
+          input#cIndex(name="index", type='text')
+        div.form-group(style="margin-right:10px;")
+          label(for="userfilter") 用户名：
+          input#userfilter.form-control(type="text", name="user", placeholder="非昵称")
+        div.form-group(style="margin-right:10px;")
+          label(for="pidfilter") 题目id：
+          input#pidfilter.form-control(type="text", name="pid", placeholder="四位数字")
+        div.form-group(style="margin-right:10px;")
+          label(for="tagfilter") 标签：
+          input#tagfilter.form-control(type="text", name="tag", placeholder="可当成文件名使用")
+        button.btn.btn-primary.pull-right(type="submit") 过滤
+    div.panel.panel-default
+      div.panel-heading= title
+      div.panel-body
+        table.table.table-hover.table-condensed.table-striped
+          caption 需要手动刷新
+          thead
+            tr
+              th ID
+              th 提交者
+              th 题目id
+              th 标签
+              th 状态
+              th 提交时间
+          tbody
+            - each line in list
+              tr 
+                td: a(href="status/submission/#{line.id}/")
+                  span.label.label-default #{line.id}
+                td: span.label.label-primary #{line.user}
+                td: span.label.label-default #{line.pid}
+                td: span.label.label-primary #{line.tag}
+                case (line.code)
+                  when 0 
+                    td: span.label.label-success #{line.status}
+                  when 1 
+                    td: span.label.label-warning #{line.status}
+                  when 2 
+                    td: span.label.label-default #{line.status}
+                  when 100 
+                    td: span.label.label-danger #{line.status}
+                td: span.label.label-info #{line.time}
+
+    //- 分页
+    nav(style="text-align:center")
+      ul.pagination
+        - if (pager.left)
+          li: a(href="#backward") &laquo;
+          li: a(href="#left") &lt;
+        - else
+          li.disabled: a(href="#") &lt;
+        - each page in pager.nums
+          - var num = "#" + page
+          - if (page!==pager.now)
+            li: a(href="#{num}")= page
+          - else
+            li.active: a#index(href="#{num}")= page
+        - if (pager.right)
+          li: a(href="#right") &gt;
+          li: a(href="#forward") &raquo;
+        - else
+          li.disabled: a(href="#") &gt;

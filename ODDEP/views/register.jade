@@ -1,0 +1,31 @@
+extends layout
+
+block addscript
+  script(src="//cdn.bootcss.com/blueimp-md5/2.5.0/js/md5.min.js")
+  script(src="/javascripts/register-ajax.js")
+
+block content
+  div.container-fluid
+    div#failed.alert.alert-danger 注册失败，服务器宕机或者你的登录用户名刚刚不幸被抢注了。
+    div#alertusername.alert.alert-danger 登录用户名已存在，或用户名非法
+    div#alertpasswd.alert.alert-danger 输入密码不一致
+    form.form-horizontal(role="form")
+      div#usernameinput.form-group
+        label.control-label.col-sm-2(for="username") 用户名
+        div.col-sm-5
+          input#username.form-control(name="username", type="text", placeholder="登陆用，最多20个字符，中文可能出错", autofocus, required)
+      div#nickinput.form-group
+        label.control-label.col-sm-2(for="nickname") 昵称
+        div.col-sm-5
+          input#nickname.form-control(name="nickname", type="text", placeholder="最多20个中文字符", required)
+      div.form-group.pwd
+        label.control-label.col-sm-2(for="password") 密码
+        div.col-sm-5
+          input#password.form-control(name="password", type="password", placeholder="md5哈希，长度不是问题，只要能记住", required)
+      div.form-group.pwd
+        label.control-label.col-sm-2(for="password") 密码验证
+        div.col-sm-5
+          input#vepassword.form-control(name="vepassword", type="password", placeholder="", required)
+      div.form-group
+        div.col-sm-offset-2.col-sm-10
+          button#registerbtn.btn.btn-primary(type="button") 注册

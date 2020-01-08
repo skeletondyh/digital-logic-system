@@ -1,0 +1,32 @@
+extends layout
+
+block content
+  div.row
+    div.col-sm-4
+      ul#editorTab.nav.nav-pills(style="padding-left:5px;")
+        li.active: a(href="#code", data-toggle="tab") VHDL编辑&nbsp;
+          span.glyphicon.glyphicon-forward
+        - if (motivate)
+          li: a(href="#motivate", data-toggle="tab") 激励&nbsp;
+            span.glyphicon.glyphicon-forward
+  div.tab-content
+    include includes/vhdleditor
+    include includes/wave-editor
+  btn.submit-btn.btn.btn-lg.btn-danger 提交
+
+block addscript
+  script(src="http://cdn.bootcss.com/ace/1.2.5/ace.js", type="text/javascript", charset="utf-8")
+  script(src="http://cdn.bootcss.com/ace/1.2.5/ext-language_tools.js")
+  script(src="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js")
+  script(src="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js")
+  script(src="/jstree/dist/jstree.min.js")
+  script(src="/javascripts/editor-ace-config.js")
+  script(src="/javascripts/editor-code-submit.js")
+  script(src="/javascripts/editor-submit.js")
+  script(src="/javascripts/filetree.js")
+
+block stylesheets
+  link(type="text/css" rel="stylesheet", href="/stylesheets/vhdleditor.css")
+  link(rel="stylesheet", href="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css")
+  link(rel="stylesheet", href="/jstree/dist/themes/default/style.min.css")
+  link(rel="stylesheet", href="/jstree/dist/themes/default-dark/style.min.css")

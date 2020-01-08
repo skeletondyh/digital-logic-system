@@ -1,0 +1,256 @@
+\documentclass{article}
+\usepackage{CJKutf8}
+\usepackage{indentfirst}
+\begin{document}
+\begin{CJK}{UTF8}{gbsn}
+\CJKindent
+\section{用户端功能}
+
+\par用户端功能主要分为电路拖拽编辑、VHDL代码编辑、项目信息显示、提交作业四大部分。本工程在第一期工程的基础上重构了整个电路拖拽编辑的架构、添加了提交作业的功能，并在仿真与VHDL代码编辑方面修改了若干bug，增加了部分新特性，使用户体验更佳。
+
+\subsection{电路拖拽编辑}
+    \par本项目中使用了更为成熟的Draw2D框架来代替一期工程中的Konva.js，并在原本在线拖拽搭建电路的基础上，添加了实时仿真、撤销操作等功能。
+    \par下面介绍各个部件的实现细节：
+\subsubsection{背景画布}
+    \par背景画布以draw2D.Canvas为基类，使用了draw2D库中自带的多个policy(也即特性)，并进行了修改以满足电路编辑需求。
+    \par使用的policy列表如下：
+    \begin{table}[!h]
+    \begin{tabular}{|l|l|}
+    \hline
+    policy名字 & policy作用 \\
+    \hline
+    DropInterceptorPolicy & 接受Droppable对象 \\
+    \hline
+    DragConnectionCreatePolicy & 允许通过拖拽连接点产生连线 \\
+    \hline
+    OrthogonalConnectionCreatePolicy & 允许通过点击连接点产生连线 \\
+    \hline
+    CoronaDecorationPolicy & 鼠标接近时显示并高亮连接点，否则隐藏 \\
+    \hline
+    ShowGridEditPolicy & 在背景上显示网格，方便编辑与观察 \\
+    \hline
+    SnapToGeometryEditPolicy & 自动对齐部件 \\
+    \hline
+    SnapToCenterEditPolicy & 自动对齐部件 \\
+    \hline
+    SnapToInBetweenEditPolicy & 自动对齐部件 \\
+    \hline
+    EditEditPolicy & 编辑模式下使用，允许用户修改电路图 \\
+    \hline
+    SimulationEditPolicy & 实时仿真模式下使用，只允许用户查看电路图 \\
+    \hline
+
+    \end{tabular}
+    \caption{policy列表}
+    \end{table}
+
+    \par为了方便用户使用，我们还使用了mousetrap库来捕获用户的按键输入，以提供快捷键功能。目前支持用户使用上下左右
+    键移动画布与使用delete键删除元件。
+
+\subsubsection{拖拽与缩放}
+    \par用户可以通过shift+鼠标拖拽的方式来移动画布。上文中提到的两个EditPolicy中都添加了对shift按键的处理，在捕获到事件后，画布会随着鼠标的移动调整自身与网页的相对位置。
+    \par同时，用户可以依靠画布右下角的缩放按钮来调整画布大小。由于Draw2d框架中自带setZoom方法用来调整背景画布的缩放与getZoom方法用来获取当前缩放，程序中只需要分别调用这些接口即可。
+    \begin{table}[!h]
+    \begin{tabular}{|l|l|l|}
+    \hline
+    按键 & 效果 & 代码段 \\
+    \hline
+    + & 放大画布及元件 & setZoom(this.getZoom()*1.2) \\
+    \hline
+    - & 缩小画布及元件 & setZoom(this.getZoom()*0.8) \\
+    \hline
+    100\% & 恢复原缩放 & setZoom(1.0) \\
+    \hline
+    \end{tabular}
+    \caption{缩放相关函数}
+    \end{table}
+
+\subsubsection{元件}
+    \par此次工程中的元件包含数字电路实验中的所有实验芯片及Vcc、GND、七段数码管、2-10进制转换器。所有芯片继承自draw2d.SetFigure，输入端使用DecoratedInputPort，输出端使用普通Port，标签为"output"。输入输出端只能接另一种端口，同种端口内部互联时网页会自动阻止操作。
+    \par每个元件包含以下自定义属性及方法：
+    \begin{table}[!h]
+    \begin{tabular}{|l|l|}
+    \hline
+    名称 & 描述 \\
+    \hline
+    name & 芯片名称 \\
+    \hline
+    note & 芯片功能描述 \\
+    \hline
+    tagForWave & 元件标签，由用户搭建电路时编辑 \\
+    \hline
+    calculate & 实时仿真时每一个周期计算步骤\\
+    \hline
+    \end{tabular}
+    \caption{元件参数及接口}
+    \end{table}
+
+    \par一个元件示例：
+    \begin{table}[!h]
+    \begin{tabular}{|l|l|}
+    \hline
+    名称 & 内容 \\
+    \hline
+    name & 74LS00 \\
+    \hline
+    note & "Y = not (A and B)" \\
+    \hline
+    calculate & Y1.setValue(!(A1.getValue() \&\& B1.getValue())); (其他端口同理) \\
+    \hline
+    \end{tabular}
+    \caption{74LS00相关参数}
+    \end{table}
+
+    \par实际生成代码时，开关、50Hz脉冲等元件会被视为输入端口，小灯泡、七段数码管会被视为输出端口。
+    \par元件列表在网页上会以画布外的悬浮列表形式显示，分为输入、输出与芯片三个部分，点击相应类别标题可以收起或弹出元件列表。当点击某一具体元件时，会生成一个带有元件类别信息的draw2d\_droppable对象，拖拽该对象进画布会触发画布的onDrop事件，进而在画布对应位置生成元件。
+    \par每个元件的剩余数量会在元件列表中显示，onDrop事件会检查并修改剩余数量，并更新网页；删除元件时，同样会修改剩余数量，更新网页。
+
+\subsubsection{标签}
+    \par为了生成与电路图对应的VHDL代码用来仿真，每一个输入输出端口需要有唯一的标识符，也即标签。程序中通过jQuery的右键菜单功能允许用户右键点击元件来添加标签，或右击标签来删除标签。
+    \par标签功能通过修改draw2d中的LabelInplaceEditor，自定义类AnotherLabelInPlaceEditor实现，支持修改和拖拽标签。
+    \par接口：
+    \begin{table}[!h]
+    \begin{tabular}{|l|l|}
+    \hline
+    名称 & 内容 \\
+    \hline
+    commit & 修改完毕后提交修改内容 \\
+    \hline
+    cancel & 放弃修改内容 \\
+    \hline
+    \end{tabular}
+    \caption{标签接口}
+    \end{table}
+    \par整个程序会维护一个已使用的名字集合，创建输入输出元件时默认命名为inx,outx(x为该类型元件总数量)。当用户试图修改标签或为其他元件添加新标签时，程序会检查以下三点合法性：
+    \par1.通过正则表达式检查该名字是否符合VHDL命名规范，是否过长或为空；
+    \par2.通过正则表达式检查该名字是否为VHDL保留字；
+    \par3.检查是否与其他元件重名。
+    \par如果不符合要求，程序会弹出对话框显示对应错误信息并取消修改，否则接受修改。此外，输入输出元件上的标签有特殊的标记，删除这些标签时网页会发出提示并拒绝修改，其他标签则可正常删除。
+    \par每个标签上都安装了一个listener，会在标签的commit事件触发后修改相连接元件的tagForWave属性，供生成代码模块确定其名字。
+    
+\subsubsection{撤销与重做}
+    \par二期工程中添加了撤销与重做的功能，当用户对之前做的操作不满意时，可以点击工具栏上的按钮来进行撤销与重做操作。
+    \par Draw2d框架中自带了CommandStack功能，可以以栈的方式记录物体的添加、删除与移动操作，这部分解决了撤销的需求，但关联的属性仅限于画布基类内部，无法将元件剩余数量、元件名字同步更改。为此，我们改写了commandStack的stackChanged事件，在事件内部另外处理这些变更。具体处理的变更有：
+    \par1.撤销元件的删除/添加操作时，修改元件剩余数量；
+    \par2.撤销对标签的编辑时，修改相应元件的tagForWave属性；
+    \par3.撤销生成/删除标签时，修改已用过的标签名集合。
+    \par4.撤销栈或重做栈为空时，将对应按键设为灰色不可用状态。
+
+\subsubsection{实时仿真}
+    \par本工程支持实时仿真功能，实时仿真周期可通过工具栏中的滑动条调节。在仿真时，会根据每根导线上电平的高低决定导线的不同颜色，方便用户观察。
+    \par具体实现思路为为每一个端口记录0/1值，对应低电平与高电平。每一个仿真时间点内，遍历所有导线，将输出端的值赋给输入端，然后根据元件的calculate函数计算出每一个输出端口的新值，如此循环。
+    \par仿真开始与结束时的具体操作：
+    \par仿真开始：使用SimulationEditPolicy，隐藏所有端口，将所有端口值初始化为0，开始循环仿真；
+    \par仿真结束：使用EditEditPolicy，保留端口值。
+
+\subsubsection{波形编辑}
+    \par波形编辑部分使用外部库dygraph实现。在点击编辑波形按钮时，会自动读取电路图内容，提取输入端口标签名，生成对应编辑界面。用户修改电路图或标签名时，波形编辑器会相应发生变化。在波形编辑时(过长输入端口名字会被隐藏)，用户可以通过拖拽或生成周期波形设置输入端口的激励值，或是设置总仿真时间。如果对波形显示不满意，还可以调整缩放比例，以取得更佳观察效果。
+    \par接口如下：
+    \begin{table}[!h]
+    \begin{tabular}{|l|l|}
+    \hline
+    名称 & 说明 \\
+    \hline
+    downV4(event, g, context) & 鼠标按下事件，调用startEdit() \\
+    \hline
+    moveV4(event, g, context) & 鼠标移动事件，调用moveEdit() \\
+    \hline
+    upV4(event, g, context) & 鼠标松开事件，调用endEdit() \\
+    \hline
+    startEdit (event, g, context) & 记录端口名、开始位置等数据，开始编辑波形 \\
+    \hline
+    moveEdit (event, g, context) & 计算距离等数据，编辑波形 \\
+    \hline
+    endEdit(event, g, context) & 根据之前的数据，生成波形 \\
+    \hline
+    onclickStart() & 设置仿真时间 \\
+    \hline
+    onclickReset() & 将波形图重置 \\
+    \hline
+    onclickPlot() & 生成周期波形 \\
+    \hline
+    reloadJili(projectId) & 将波形信息上传给服务器 \\
+    \hline
+    \end{tabular}
+    \caption{波形编辑接口}
+    \end{table}
+
+\subsubsection{杂项}
+    \par导线使用draw2d.connection实现，采用InteractiveManhattanConnectionRouter，允许用户拖拽折点和导线段来微调导线。
+    \par电路图与服务器间的交流使用draw2d中的writer.marshal实现，以json格式传递。在仿真与提交前，程序会自动将每一条导线的source和destination属性调整为输出端与输入端，方便后端程序生成代码。
+    \par用户观看样例工程时，提交相关功能会被禁止；用户编辑作业工程时，允许用户提交电路图进行标准激励的测试。
+
+
+\subsection{VHDL代码编辑}
+    \par文本编辑器以开源的ace-editor为基础,可为VHDL代码实现高亮功能，并添加了一些其他功能。
+
+\subsubsection{代码补全}
+    \par程序支持自动补全VHDL关键字，如begin,architecture等，出现对应补全框时按回车即可补全，有效提高了用户编辑速度。该功能实现文件在/TextEditor/src-nonconflict/mode-vhdl.js中。
+
+\subsubsection{代码折叠}
+    \par过高代码量会影响用户调试，而代码折叠功能可以让用户将不需要的代码段收起，只显示需要的部分，提高调试效率。在case,if,begin-end语句旁会出现小箭头，点击该箭头即可收起或放出对应代码段。
+    \par使用的函数有：
+    \begin{table}[!h]
+    \begin{tabular}{|l|l|l|}
+    \hline
+    名称 & 内容 & 返回值 \\
+    \hline
+    getFoldWidget(session,foldStyle,row) & 从对应行号开始进行折叠 & 折叠信息类 \\
+    \hline
+    getBeginEndBlock (session, row, column, matchSequence) & 搜索可折叠代码段并返回位置 & 代码段的开始与结束位置 \\
+    \hline
+    \end{tabular}
+    \caption{代码折叠接口}
+    \end{table}
+
+\subsubsection{多文件}
+    \par文件树部分采用开源库ez-filetree，可以显示文件列表，并支持新建、删除、重命名、打开、保存等功能。多标签编辑文件采用了开源项目hhEditor。
+    \par使用的函数有：
+    \begin{table}[!h]
+    \begin{tabular}{|l|l|}
+    \hline
+    名称 & 内容  \\
+    \hline
+    getFileTree() & 向后端请求文件列表 \\
+    \hline
+    activate(file) & 打开对应文件并新建标签显示 \\
+    \hline
+    \end{tabular}
+    \caption{多文件接口}
+    \end{table}
+
+\subsubsection{快捷键}
+    \par程序支持多种快捷键：Ctrl+s可以保存文件或将新建文件保存新内容；双击文件标签可以进行重命名；ctrl+shift+d可以删除相应文件。
+
+\subsubsection{编译信息}
+    \par编译完成后，用户可以点击左下角显示本次编译信息，在单击具体错误信息时，还会打开出错文件并跳转到对应行。
+
+
+\subsection{项目信息显示}
+    \par用户登录时，网站会从后端获取该用户的所有项目列表，根据项目complieStatus属性的不同，显示会有一些差异：
+    \begin{table}[!h]
+    \begin{tabular}{|l|l|l|}
+    \hline
+    值 & 意义 & 颜色  \\
+    \hline
+    0 & 仿真通过 & 绿色 \\
+    \hline
+    1 & 尚未提交 & 蓝色 \\
+    \hline
+    2 & 编译成功但仿真失败 & 黄色 \\
+    \hline
+    3 & 编译失败 & 红色 \\
+    \hline
+    \end{tabular}
+    \caption{多文件接口}
+    \end{table}
+    \par用户的自定义项目、作业项目、仅供观看的样例项目会分三个不同区块显示。
+
+\subsubsection{提交作业}
+    \par在上传完电路图信息与激励波形后，用户可以进行提交，进行modelsim仿真。对于作业项目，用户还可以提交自己的电路图，以教师设定的标准激励为输入进行仿真。
+    \par用户可以在首页或相应工程的编辑页面中查看每一次提交的信息。对于自定义激励的提交，可以查看到编译信息，点击对应条目还可以查看每一个输入输出端口的波形信息，此界面同样使用外部库dygraph实现。
+    \par但对于标准激励的提交，只显示最终得分，不显示编译信息及波形，以防止学生获得标准激励信息。
+    \par此外，用户可以下载自定义激励提交的所有文件（包括电路VHDL代码、激励代码等），方便调试。
+
+\end{CJK}
+\end{document}

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Homework Details</title>
+
+    <script src="../../node_modules/gentelella/vendors/echarts/dist/echarts.min.js"></script>
+    <script src="../../node_modules/highcharts/highcharts.js"></script>
+    <!-- Bootstrap -->
+    <link href="../../node_modules/gentelella/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../../node_modules/gentelella/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../../node_modules/gentelella/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../../node_modules/gentelella/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- Datatables -->
+    <link href="../../node_modules/gentelella/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="../../node_modules/gentelella/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="../../node_modules/gentelella/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="../../node_modules/gentelella/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="../../node_modules/gentelella/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="../../node_modules/gentelella/build/css/custom.min.css" rel="stylesheet">
+</head>
+<body class="nav-md">
+<div class="container body">
+    <div class="main_container">
+        <div class="col-md-3 left_col">
+            <div class="left_col scroll-view">
+                <div class="navbar nav_title" style="border: 0;">
+                    <a href="index.html" class="site_title"><i class="fa fa-paw"></i> <span>ExprOnline</span></a>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <!-- menu profile quick info -->
+                <div class="profile">
+                    <div class="profile_pic">
+                        <img src="../../node_modules/gentelella/production/images/img.jpg" alt="..." class="img-circle profile_img">
+                    </div>
+                    <div class="profile_info">
+                        <span>Welcome,</span>
+                        <h2><%=locals.user.userName%></h2>
+                    </div>
+                </div>
+                <!-- /menu profile quick info -->
+                <br />
+                <%include sideBar.ejs%>
+            </div>
+        </div>
+        <%include topNavigation.ejs%>
+
+
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+            <div class="">
+                <div class="page-title">
+                    <div class="title_left">
+                        <h3>Welcome, <%= locals.user.userName%></h3>
+                    </div>
+
+                </div>
+
+                <div class="clearfix"></div>
+
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Homework Details</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <table id="datatable-checkbox" class="table table-striped table-bordered bulk_action">
+                                <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="check-all" class="flat"></th>
+                                    <th>Student Name</th>
+                                    <th>Score</th>
+                                    <th>Submit Times</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <% for(var i = 0; i < locals.crtHw.correspondProject.length; ++ i){
+                                    var currentPrj = locals.crtHw.correspondProject[i];
+                                %>
+                                <tr>
+                                    <td><input type="checkbox" class="flat" name="table_records"></td>
+                                    <td><%=currentPrj.author.userName%></td>
+                                    <td><%=currentPrj.score%></td>
+                                    <td><%=currentPrj.hwSubmitBox.length%><a class="pull-right" href="<%="homeworkProjectSubmit?projectId=" + currentPrj._id%>">(detail)</a></td>
+                                </tr>
+                                <%}%>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="page-title">
+
+                    <div class="title_left">
+                        <h3>Visualization</h3>
+                    </div>
+
+                </div>
+
+                <div class="main_container">
+                    <div id="testecharts" style="width: 600px;height:400px;"><!--style="border:2px solid #0026ff;" >-->
+                        <script>
+                            // 图表配置
+
+                            var total = <%=locals.crtHw.correspondProject.length%>;
+                            var prj = JSON.parse("<%= JSON.stringify(locals.crtHw.correspondProject) %>".replace(/&#34;/g,"\""));
+                            //console.log(prj);
+
+                            //var submit_count = 0;
+                            var maxscore = 0;
+                            var scorecandidate = [];
+                            var peoplenum = [];
+                            for(var i = 0; i < total; ++ i) {
+                                var currentPrj = prj[i];
+                                //console.log(currentPrj);
+                                if (currentPrj.score > maxscore) maxscore = currentPrj.score;
+                            }
+
+                            for(var j = 0; j <= maxscore; j++) {
+                                scorecandidate.push(j);
+                                peoplenum.push(0);
+                            }
+
+                            for(var k = 0; k < total; ++ k) {
+                                var currenttPrj = prj[k];
+                                //console.log(currentPrj);
+                                if (currenttPrj.hwSubmitBox.length > 0) {
+                                    peoplenum[currenttPrj.score] ++;
+                                }
+                            }
+
+
+                            var options = {
+                                chart: {
+
+                                    type: 'bar'
+
+                                },
+
+                                title: {
+
+                                    text: '已提交的分数分布'
+
+                                },
+
+                                xAxis: {
+
+                                    categories: scorecandidate,
+
+                                    title: {
+                                        text: '分数'
+                                    }
+
+                                },
+
+                                yAxis: {
+
+                                    min: 0,
+
+                                    title: {
+
+                                        text: '人数'
+
+                                    }
+
+                                },
+
+                                legend: {
+
+                                    reversed: true
+
+                                },
+
+                                plotOptions: {
+
+                                    series: {
+
+                                        stacking: 'normal'
+
+                                    }
+
+                                },
+
+                                series: [{
+
+
+                                    data: peoplenum
+
+                                }]
+
+                            };
+                            // 图表初始化函数
+                            var chart = Highcharts.chart('testecharts', options);
+                        </script>
+                        <!--<script type="text/javascript">
+                        // 基于准备好的dom，初始化echarts实例
+                        var myChart = echarts.init(document.getElementById('testecharts'));
+
+                        // 指定图表的配置项和数据
+                        var option = {
+                            title: {
+                                text: 'ECharts Test'
+                            },
+                            tooltip: {},
+                            legend: {
+                                data:['销量']
+                            },
+                            xAxis: {
+                                data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+                            },
+                            yAxis: {},
+                            series: [{
+                                name: '销量',
+                                type: 'bar',
+                                data: [5, 20, 36, 10, 10, 20]
+                            }]
+                        };
+
+                        // 使用刚指定的配置项和数据显示图表。
+                        myChart.setOption(option);
+                    </script>-->
+                    </div>
+                    <!--</canvas>-->
+                </div>
+
+                <div class="main_container">
+                    <div id="testecharts2" style="width: 600px;height:400px;"><!--style="border:2px solid #0026ff;" >-->
+                        <script>
+                            // 图表配置
+
+                            var total = <%=locals.crtHw.correspondProject.length%>;
+                            var prj = JSON.parse("<%= JSON.stringify(locals.crtHw.correspondProject) %>".replace(/&#34;/g,"\""));
+                            console.log(prj);
+
+                            var submit_count = 0;
+                            for(var i = 0; i < total; ++ i) {
+                                var currentPrj = prj[i];
+                                console.log(currentPrj);
+                                if (currentPrj.hwSubmitBox.length > 0) submit_count++;
+                            }
+                            var options = {
+                                chart: {
+
+                                    plotBackgroundColor: null,
+
+                                    plotBorderWidth: null,
+
+                                    plotShadow: false
+
+                                },
+
+                                title: {
+
+                                    text: '作业提交情况'
+
+                                },
+
+                                tooltip: {
+
+                                    headerFormat: '{series.name}<br>',
+
+                                    pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+
+                                },
+
+                                plotOptions: {
+
+                                    pie: {
+
+                                        allowPointSelect: true,
+
+                                        cursor: 'pointer',
+
+                                        dataLabels: {
+
+                                            enabled: false
+
+                                        },
+
+                                        showInLegend: true
+
+                                    }
+
+                                },
+
+                                series: [{
+
+                                    type: 'pie',
+
+                                    name: '提交/未提交',
+
+                                    data: [
+
+                                        ['提交',   submit_count * 100 / total],
+
+                                        ['未提交',       100 - submit_count * 100 / total]
+
+                                    ]
+
+                                }]
+
+                            };
+                            // 图表初始化函数
+                            var chart = Highcharts.chart('testecharts2', options);
+                        </script>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+            <div class="pull-right">
+                Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
+            </div>
+            <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="../../node_modules/gentelella/vendors/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="../../node_modules/gentelella/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="../../node_modules/gentelella/vendors/fastclick/lib/fastclick.js"></script>
+<!-- NProgress -->
+<script src="../../node_modules/gentelella/vendors/nprogress/nprogress.js"></script>
+
+<!-- icheck -->
+<script src="../../node_modules/gentelella/vendors/iCheck/icheck.min.js"></script>
+<!-- Custom Theme Scripts -->
+<script src="../../node_modules/gentelella/build/js/custom.min.js"></script>
+
+<!-- echarts -->
+<script src="../../node_modules/gentelella/vendors/echarts/dist/echarts.min.js"></script>
+
+<!-- Datatables -->
+<script src="../../node_modules/gentelella/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+<script src="../../node_modules/gentelella/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/jszip/dist/jszip.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/pdfmake/build/pdfmake.min.js"></script>
+<script src="../../node_modules/gentelella/vendors/pdfmake/build/vfs_fonts.js"></script>
+
+<!-- Datatables -->
+<script>
+    $(document).ready(function() {
+
+
+
+
+
+        var $datatable = $('#datatable-checkbox');
+
+        $datatable.dataTable.fnDestroy();
+        $datatable.dataTable({
+            'order': [[ 1, 'asc' ]],
+            'columnDefs': [
+                { orderable: false, targets: [0] }
+            ]
+        });
+        $datatable.on('draw.dt', function() {
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_flat-green'
+            });
+        });
+    });
+</script>
+
+<!--<script>
+    function drawCircle(canvasId, data_arr, color_arr, text_arr)
+    {
+        var c = document.getElementById(canvasId);
+        var ctx = c.getContext("2d");
+
+        var radius = c.height / 2 - 20; //半径
+        var ox = radius, oy = radius; //圆心
+
+        var width = 30, height = 10; //图例宽和高
+        var posX = ox * 2 + 20, posY = 30;   //
+        var textX = posX + width + 5, textY = posY + 10;
+
+        var startAngle = 0; //起始弧度
+        var endAngle = 0;   //结束弧度
+        for (var i = 0; i < data_arr.length; i++)
+        {
+            //绘制饼图
+            endAngle = endAngle + data_arr[i] * Math.PI * 2; //结束弧度
+            ctx.fillStyle = color_arr[i];
+            ctx.beginPath();
+            ctx.moveTo(ox, oy); //移动到到圆心
+            ctx.arc(ox, oy, radius, startAngle, endAngle, false);
+            ctx.closePath();
+            ctx.fill();
+            startAngle = endAngle; //设置起始弧度
+
+            //绘制比例图及文字
+            ctx.fillStyle = color_arr[i];
+            ctx.fillRect(posX, posY + 20 * i, width, height);
+            ctx.moveTo(posX, posY + 20 * i);
+            ctx.font = 'bold 12px 微软雅黑';    //斜体 30像素 微软雅黑字体
+            ctx.fillStyle = color_arr[i]; //"#000000";
+            var percent = text_arr[i] + "：" + 100 * data_arr[i] + "%";
+            ctx.fillText(percent, textX, textY + 20 * i);
+        }
+    }
+
+    function init() {
+        //绘制饼图
+        //比例数据和颜色
+        var data_arr = [0.33, 0.67];
+        var color_arr = ["#FF5A5E", "#616774"];
+        var text_arr = ["PASSED", "FAILED"];
+
+        drawCircle("canvas_circle", data_arr, color_arr, text_arr);
+    }
+
+    //页面加载时执行init()函数
+    window.onload = init;
+</script>-->
+</body>
+</html>

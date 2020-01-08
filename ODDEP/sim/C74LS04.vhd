@@ -1,0 +1,1 @@
+../public/chips/C74LS04.vhd

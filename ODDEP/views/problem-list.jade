@@ -1,0 +1,45 @@
+extends layout
+
+block addscript
+  script(src="/javascripts/problem-pager.js")
+
+block content
+  div.container-fluid
+    - if (power > 0)
+      h3: a(href="/problem/edit/new") 新建题目
+    div.panel.panel-primary
+      div.panel-heading
+      div.panel-body
+        table.table.table-hover.table-striped
+          thead: tr
+            th ID
+            th 标题
+            th Source
+            - if (power > 0)
+              th Admin
+          tbody
+            - each row in list
+              tr
+                td: span.label.label-primary= row.pid
+                td: a(href="/problem/#{row.pid}")= row.title
+                td= row.source
+                - if (power > 0)
+                  td: a(href="/problem/edit/#{row.pid}") 编辑
+    nav(style="text-align:center")
+      ul.pagination
+        - if (pager.left)
+          li: a(href="#backward") &laquo;
+          li: a(href="#left") &lt;
+        - else
+          li.disabled: a(href="#") &lt;
+        - each page in pager.nums
+          - var num = "#" + page
+          - if (page!==pager.now)
+            li: a(href="#{num}")= page
+          - else
+            li.active: a#index(href="#{num}")= page
+        - if (pager.right)
+          li: a(href="#right") &gt;
+          li: a(href="#forward") &raquo;
+        - else
+          li.disabled: a(href="#") &gt;

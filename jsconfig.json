@@ -1,0 +1,40 @@
+{
+	// 请访问 https://go.microsoft.com/fwlink/?LinkId=759670
+	// 参阅有关 jsconfig.json 格式的文档
+	"compilerOptions": {
+		"target": "es6",
+		"module": "commonjs",
+		"allowSyntheticDefaultImports": true
+	},
+	"exclude": [
+		"node_modules",
+		"bower_components",
+		"jspm_packages",
+		"tmp",
+		"temp",
+		"FileTree",
+		"hhEditor",
+		"jqcool.net-jquery-fullpage",
+		"ODDEP",
+		"public/bootstrap",
+		"public/bootstrap-slider",
+		"public/d3",
+		"public/draw2d",
+		"public/draw2d-shapes",
+		"public/dygraphs",
+		"public/files",
+		"public/images",
+		"public/Ionicons",
+		"public/jquery",
+		"public/jquery-ui",
+		"public/jsrender",
+		"public/jstree",
+		"public/lib",
+		"public/locstor",
+		"public/modernizr",
+		"public/mousetrap",
+		"public/shifty",
+		"public/shine",
+		"public/shufflejs"
+	]
+}

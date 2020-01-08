@@ -1,0 +1,52 @@
+node_modules
+bower_components
+*.swp
+*.db
+npm-debug.log
+/public/tmp/*
+/.vscode/
+.DS_Store
+/.idea/
+/sim/*
+./db/tot.db
+
+# 驱动模拟需要的文件
+!/sim/env.sh
+!/sim/lemon.js
+!/sim/sim.do
+!/sim/sim.sh
+!/sim/C*.vhd
+
+# 测试需要的文件
+!/sim/motivate/
+!/sim/input/
+!/sim/answer/
+/sim/motivate/*
+/sim/input/*
+/sim/answer/*
+!/sim/motivate/1002.vhd
+!/sim/input/1002.in
+!/sim/answer/1002.ans
+!/public/tmp/code
+/public/tmp/code/*
+!/public/tmp/motivate
+/public/tmp/motivate/*
+!/public/tmp/log
+/public/tmp/log/*
+!/public/tmp/vcd
+/public/tmp/vcd/*
+!/public/tmp/code/test.vhd
+!/public/tmp/code/test1.vhd
+!/public/tmp/code/test2.vhd
+!/public/tmp/code/test3.vhd
+!/public/tmp/motivate/test.vhd
+!/public/tmp/motivate/test1.vhd
+!/public/tmp/motivate/test2.vhd
+!/public/tmp/log/__init__
+!/public/tmp/vcd/__init__
+
+# 临时文件
+db/userImport.txt
+
+# 测试工具报告
+/coverage/

@@ -1,0 +1,37 @@
+{
+  "name": "prj7_tot",
+  "description": "Online Experiment Platform",
+  "main": "",
+  "authors": [
+    "Chen Yazheng <icyz14@163.com>",
+    "Li Chengjie  <licj14@mails.tsinghua.edu.cn>",
+    "Chen Minghao <cmh14@mails.tsinghua.edu.cn>",
+    "Tian Yu      <tianyu.bruce@gmail.com>",
+    "Ning Minxing <1554948687@qq.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "js",
+    "html5",
+    "css"
+  ],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "draw2d": "^6.1.65",
+    "draw2d-shapes": "^1.0.178",
+    "mousetrap": "^1.6.0",
+    "bootstrap": "^3.3.7",
+    "jstree": "^3.3.3",
+    "d3": "^3.5.17",
+    "locstor": "^1.0.7",
+    "bootstrap-slider": "*"
+  }
+}

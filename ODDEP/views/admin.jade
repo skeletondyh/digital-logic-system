@@ -1,0 +1,62 @@
+extends layout
+
+block stylesheets
+  link(rel="stylesheet", href="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css")
+
+block addscript
+  script(src="/javascripts/admin-power.js")
+  script(src="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js")
+  script(src="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js")
+  script(src="/javascripts/admin-userimport.js")
+  script(src="/javascripts/admin-regswitch.js")
+
+block content
+  div.container-fluid
+    div
+      ul#tabtab.nav.nav-tabs
+        li: a(href="#power", data-toggle="tab") 权限管理
+        li: a(href="#userimport", data-toggle="tab") 用户导入
+        li: a(href="#regswitch", data-toggle="tab") 注册开关
+    div.tab-content
+      div#first.tab-pane.in.active
+        h2 欢迎来到后台管理系统
+      div#power.tab-pane
+        div.well
+          form.form-inline
+            button#powerall.btn.btn-primary(type="button") 显示权限非零者
+            div.form-group(style="margin-left:15px;")
+              input#iuserid.form-control(type="number", placeholder="UID")
+              button#poweruid.btn.btn-default(type="button") 按用户ID检索
+            div.form-group(style="margin-left:15px;")
+              input#iusername.form-control(type="text", placeholder="username")
+              button#powername.btn.btn-default(type="button") 按用户名检索
+        div
+          table.table.table-hover.table-striped
+            thead: tr
+              th UID
+              th 用户名
+              th 昵称
+              th 权限
+              th 权限变动
+            tbody#powertable
+      div#userimport.tab-pane
+        div.well
+          p 上传文件要求utf-8编码纯文本，每行两个字符串，第一个字符串是用户名，然后一个空格，第二个字符串是密码。
+          p 例子：
+            pre
+              | Trump xilali
+              | Obama guanhai
+        div
+          form.form-horizontal(enctype="multipart/form-data", action="/upload/admin/userimport", method="post", target="userimportuplres")
+            div.form-group
+              label.col-sm-2.control-label(for="uimpupl") 导入文件
+              div.col-sm-8
+                input#uimpupl.form-control(type="file", name="importfile")
+              div.col-sm-2
+                iframe(name="userimportuplres")
+          button#userimportbtn.btn.btn-danger.hidden 导入至数据库
+      div#regswitch.tab-pane
+        p#regswitchstate
+        p#regswitchstaterqtime
+        button#regswitchf5btn.btn.btn-lg.btn-info 刷新
+        button#regswitchbtn.btn.btn-lg.btn-primary 切换

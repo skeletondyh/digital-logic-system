@@ -1,0 +1,18 @@
+general:
+  branches:
+    ignore:
+      - gh-pages # list of branches to ignore
+
+dependencies:
+  pre:
+    - git config user.email "a.herz@freegroup.de"
+    - git config user.name "Andreas Herz"
+
+## Deployment options
+
+deployment:
+  default:
+    branch: [master]
+    commands:
+      - bower install
+      - grunt publish

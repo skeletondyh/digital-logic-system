@@ -1,0 +1,10 @@
+div#modalVHDL.modal.fade(tabindex="-1", role="dialog", aria-hidden="true", data-toggle="modal")
+  div.modal-dialog
+    div.modal-content
+      div.modal-header
+        button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+        h4.modal-title VHDL代码预览
+      div.modal-body
+        pre#vhdlPreview.prettyprint.lang-vhdl
+      div.modal-footer
+        button.btn.btn-default(type="button", data-dismiss="modal") 关闭

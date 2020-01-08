@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <link rel='stylesheet' href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/public/js/animation.js"></script>
+    <link rel="stylesheet" href="/public/stylesheets/circleBtn.css" />
+    <link rel="stylesheet" href="/public/stylesheets/buttons.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        #projectCreate {}
+
+        .cc-selector input {
+            margin: 0;
+            padding: 0;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .visa {
+            background-image: url(/images/drag.png);
+        }
+
+        .mastercard {
+            background-image: url(/images/code.png);
+        }
+
+        .express {
+            background-image: url(/images/cpu.png);
+        }
+
+        .cc-selector input:active+.drinkcard-cc {
+            opacity: .9;
+        }
+
+        .cc-selector input:checked+.drinkcard-cc {
+            -webkit-filter: none;
+            -moz-filter: none;
+            filter: none;
+        }
+
+        .drinkcard-cc {
+            border-radius: 8px;
+            cursor: pointer;
+            background-size: contain;
+            background-repeat: no-repeat;
+            display: inline-block;
+            width: 120px;
+            height: 84px;
+            -webkit-transition: all 100ms ease-in;
+            -moz-transition: all 100ms ease-in;
+            transition: all 100ms ease-in;
+            -webkit-filter: brightness(1) grayscale(1) opacity(.7);
+            -moz-filter: brightness(1) grayscale(1) opacity(.7);
+            filter: brightness(1) grayscale(1) opacity(.7);
+        }
+
+        .drinkcard-cc:hover {
+            -webkit-filter: brightness(1.2) grayscale(.5) opacity(.9);
+            -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
+            filter: brightness(1.2) grayscale(.5) opacity(.9);
+        }
+
+        #stimEditModal {
+            left:300px;
+        }
+    </style>
+
+    <!--todo: calculate #stimEditModal left margin -->
+
+    <title>Welcome</title>
+
+    <!-- Bootstrap -->
+    <link href="../../node_modules/gentelella/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../../node_modules/gentelella/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../../node_modules/gentelella/vendors/nprogress/nprogress.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="../../node_modules/gentelella/build/css/custom.min.css" rel="stylesheet">
+</head>
+
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a class="site_title">
+                            <i class="fa fa-paw"></i>
+                            <span>ExprOnline</span>
+                        </a>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- menu profile quick info -->
+                    <div class="profile">
+                        <div class="profile_pic">
+                            <img src="../../node_modules/gentelella/production/images/img.jpg" alt="..." class="img-circle profile_img">
+                        </div>
+                        <div class="profile_info">
+                            <span>Welcome,</span>
+                            <h2>
+                                <%=locals.user.userName%>
+                            </h2>
+                        </div>
+                    </div>
+                    <!-- /menu profile quick info -->
+
+                    <br />
+
+                    <%include sideBar.ejs%>
+                </div>
+            </div>
+
+            <%include topNavigation.ejs%>
+
+                <!-- page content -->
+                <div class="right_col" role="main">
+                    <div class="">
+
+                        <div class="clearfix"></div>
+
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="x_panel">
+                                    <div class="x_title">
+                                        <h2>Examples</h2>
+                                        <ul class="nav navbar-right panel_toolbox">
+                                            <li>
+                                                <a class="collapse-link">
+                                                    <i class="fa fa-chevron-up"></i>
+                                                </a>
+                                            </li>
+                                            <li class="dropdown">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                                    <i class="fa fa-wrench"></i>
+                                                </a>
+                                                <ul class="dropdown-menu" role="menu">
+                                                    <li>
+                                                        <a href="#">Settings 1</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">Settings 2</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a id="projectCreate" data-toggle="modal" data-target="#ProjectCreateModal">
+                                                    <i class="fa fa-plus"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="x_content">
+                                        <!-- start here -->
+                                        <%if(exampleList == undefined || exampleList.length == 0){%>
+                                            <div class="jumbotron">
+                                                <p>No Project</p>
+                                            </div>
+                                            <%}else{%>
+                                                <div class="row">
+                                                    <%
+                                                                                var status2Color = new Map();
+                                                                                status2Color.set(0, "panel-success");
+                                                                                status2Color.set(1, "panel-info");
+                                                                                status2Color.set(2, "panel-warning");
+                                                                                status2Color.set(3, "panel-danger");
+                                                                                status2Color.set(4, "panel-collapse");
+                                                                        for(var i = 0; i < exampleList.length; ++ i){
+                                                                                var nowProject = exampleList[i];
+                                                                                console.log("@@@@@@@@@@@@@@");
+                                                                                console.log(exampleList[i]);
+                                                                                //if(nowProject.is_example === true)
+                                                                        %>
+                                                        <div class="col-md-3">
+                                                            <div class="panel panel-success">
+                                                                <div class="panel-heading">
+                                                                    <h3 class="panel-title">
+                                                                        <%=nowProject.projectName%>
+                                                                            <% var s = "/submit?exampleId=" + nowProject._id; %>
+                                                                                <a type="button" class="fa fa-reorder pull-right" href="<%=s%>" role="button"></a>
+                                                                                <a type="button" class="fa fa-remove pull-right" onclick="exampleDelete('<%=nowProject._id%>')" role="button"></a>
+                                                                                <%s = "/example?projectId=" + nowProject._id;%>
+                                                                                    <a type="button" class="fa fa-edit pull-right" href="<%=s%>" role="button"></a>
+                                                                    </h3>
+                                                                </div>
+
+                                                                <div class="panel-body">
+                                                                    <h3>
+                                                                        <%=nowProject.topEntityName%>
+                                                                    </h3>
+                                                                    <p>simulated by
+                                                                        <h4>
+                                                                            <%=nowProject.inputFile%>
+                                                                        </h4>
+                                                                    </p>
+
+                                                                </div>
+
+
+                                                            </div>
+
+                                                        </div>
+
+                                                        <%}%>
+                                                </div>
+                                                <%}%>
+
+                                                    <!--end here -->
+                                    </div>
+                                </div>
+
+                                <!-- homework-->
+
+                                <div class="x_panel">
+                                    <div class="x_title">
+                                        <h2>Homeworks</h2>
+                                        <ul class="nav navbar-right panel_toolbox">
+                                            <li>
+                                                <a class="collapse-link">
+                                                    <i class="fa fa-chevron-up"></i>
+                                                </a>
+                                            </li>
+                                            <li class="dropdown">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                                    <i class="fa fa-wrench"></i>
+                                                </a>
+                                                <ul class="dropdown-menu" role="menu">
+                                                    <li>
+                                                        <a href="#">Settings 1</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">Settings 2</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a id="homeworkCreate" data-toggle="modal" data-target="#HomeworkCreateModal">
+                                                    <i class="fa fa-plus"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="x_content">
+                                        <!-- start here -->
+                                        <%if(homeworkList == undefined || homeworkList.length == 0){%>
+                                            <div class="jumbotron">
+                                                <p>No Homework</p>
+                                            </div>
+                                            <%}else{%>
+                                                <div class="row">
+                                                    <%
+                                                                                var status2Color = new Map();
+                                                                                status2Color.set(0, "panel-success");
+                                                                                status2Color.set(1, "panel-info");
+                                                                                status2Color.set(2, "panel-warning");
+                                                                                status2Color.set(3, "panel-danger");
+                                                                                status2Color.set(4, "panel-collapse");
+                                                                        for(var i = 0; i < homeworkList.length; ++ i){
+                                                                                var nowHomework = homeworkList[i];
+                                                                                //console.log("@@@@@@@@@@@@@@");
+                                                                                //console.log(homeworkList[i]);
+                                                                                //if(nowProject.is_example === true)
+                                                                        %>
+                                                        <div class="col-md-3">
+                                                            <div class="panel panel-info">
+                                                                <div class="panel-heading">
+                                                                    <h3 class="panel-title">
+                                                                        <%=nowHomework.homeworkName%>
+                                                                            <!--<a type="button" class="fa fa-remove pull-right"></a>-->
+                                                                            <%if(nowHomework.relateExample.type == 0){%>
+                                                                            <a id="editStimulation" data-toggle="modal" data-target="#editStimulationModal">
+                                                                                <i type="button" class="fa fa-file-code-o pull-right" onclick="homeworkLoad('<%=nowHomework._id%>')"></i>
+                                                                            </a>
+                                                                            <%}%>
+                                                                    </h3>
+                                                                </div>
+
+                                                                <div class="panel-body">
+                                                                    <h4>
+                                                                        <strong> example : </strong>
+                                                                        <%=nowHomework.exampleName%>
+                                                                    </h4>
+                                                                    <h4>
+                                                                        <strong> deadline : </strong>
+                                                                        <%=nowHomework.deadline.getFullYear()%> -
+                                                                            <%=nowHomework.deadline.getMonth()+1%> -
+                                                                                <%=nowHomework.deadline.getDate()%>
+                                                                    </h4>
+                                                                    <h4>
+                                                                        <strong> description : </strong>
+                                                                        <%=nowHomework.describe%>
+                                                                    </h4>
+                                                                </div>
+
+                                                            </div>
+
+
+                                                        </div>
+
+                                                        <%}%>
+                                                </div>
+                                                <%}%>
+
+                                                    <!--end here -->
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /page content -->
+
+                <!-- footer content -->
+                <footer>
+                    <div class="pull-right">
+                        Gentelella - Bootstrap Admin Template by
+                        <a href="https://colorlib.com">Colorlib</a>
+                    </div>
+                    <div class="clearfix"></div>
+                </footer>
+                <!-- /footer content -->
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="../../node_modules/gentelella/vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../../node_modules/gentelella/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="../../node_modules/gentelella/vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="../../node_modules/gentelella/vendors/nprogress/nprogress.js"></script>
+
+    <!-- Custom Theme Scripts -->
+    <script src="../../node_modules/gentelella/build/js/custom.min.js"></script>
+
+    <script src="/js/wave.js"></script>
+    <script type="text/javascript" src="/dygraphs/dygraph-combined-dev.js"></script>
+    <script type="text/javascript" src="/dygraphs/extras/synchronizer.js"></script>
+    <script src="/js/konva.min.js"></script>
+
+
+    <div class="modal fade" id="ProjectCreateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">New Example</h4>
+                </div>
+                <form class="form-horizontal" id="CreateExampleForm" role="form" method="post" href="/admin/createExamples">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Project Name</label>
+                            <div class="col-sm-9">
+                                <input name="projectName" type="text" class="form-control" id="ProjectName" placeholder="Project Name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Top Entity</label>
+                            <div class="col-sm-9">
+                                <input name="topEntity" type="text" class="form-control" id="topEntity" placeholder="Top Entity" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Simulate File</label>
+                            <div class="col-sm-9">
+                                <input name="inputFile" type="text" class="form-control" id="inputFile" placeholder="Simulate File" required>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Project Type</label>
+
+                            <div class="cc-selector col-sm-9">
+                                <input type="radio" name="projectType" id="drag" value="0" checked />
+                                <label class="drinkcard-cc visa" for="drag"></label>
+                                <input type="radio" name="projectType" id="edit" value="1" />
+                                <label class="drinkcard-cc mastercard" for="edit"></label>
+                                <!--<input type="radio" name="projectType" id="cpu" value="2" />
+                                <label class="drinkcard-cc express" for="cpu"></label>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="HomeworkCreateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">New Homework</h4>
+                </div>
+                <form class="form-horizontal" id="CreateHomeworkForm" role="form" method="post">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Homework Name</label>
+                            <div class="col-sm-9">
+                                <input name="homeworkName" type="text" class="form-control" id="homeworkName" placeholder="Homework Name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Select Example</label>
+                            <div class="col-sm-9">
+                                <select name="exampleName" id="exampleName"> 
+                                    <% for(var i = 0; i < exampleList.length; ++ i){ %>
+                                    <option value="<%=exampleList[i].projectName%>"><%=exampleList[i].projectName%></option> 
+                                    <%}%>
+                                </select> 
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Deadline</label>
+                            <div class="col-sm-3">
+                                <input name="D_Year" type="text" class="form-control" id="D_Year" placeholder="Year" required>
+                            </div>
+                            <div class="col-sm-3">
+                                <input name="D_Month" type="text" class="form-control" id="D_Month" placeholder="Month" required>
+                            </div>
+                            <div class="col-sm-3">
+                                <input name="D_Day" type="text" class="form-control" id="D_Day" placeholder="Day" required>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Description</label>
+                            <div class="col-sm-9 ">
+                                <textarea name="description" rows=5 class="form-control" id="description" placeholder="Description" style="resize: none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editStimulationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Edit Stimulation</h4>
+                </div>
+                <div class="modal-body" id="editStimulationList">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="stimNameModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">New Stimulation file name</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="stimFileName" type="text" class="form-control" id="stimFileName" placeholder="filename" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitStimFilename()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="stimEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="display: inline-block; width: auto;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="stimFileTitle">New Stimulation file name</h4>
+                </div>
+                <div class="modal-body">
+                    <!--for wave editing-->
+                    <div id="container"></div>
+
+                    <div class="wave-box panel panel-default" id="wave-box">
+
+                    <div class="box-inner panel-heading" >
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label>设置仿真时间</label>
+                                <div class="input-group">
+                                    <input class="form-control" id="simTime" placeholder="time" value="200" width="5" type="text" style="width: 100px">
+                                    <div class="input-group-addon">ns</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-default" id="startSimulate" onclick="onclickStart()">设置</button>
+                            &nbsp; &nbsp; &nbsp; &nbsp;
+                            <div class="form-group">
+                                <label>设置周期信号</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">将输入信号</div>
+                                    <input class="form-control" id="sigName" placeholder="输入" width="6em" type="text" style="width: 50px">
+                                    <div class="input-group-addon" style="border-left-width: 0">的周期设置为</div>
+                                    <input class="form-control" id="period" value="10" width="5" type="text" style="width: 50px; border-left-width: 0">
+                                    <div class="input-group-addon">ns</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-default" id="plot" onclick="onclickPlot()">生成</button>
+                            <button class="btn btn-default" id="reset" onclick="onclickReset()">重置</button>
+                            &nbsp; &nbsp; &nbsp; &nbsp;
+                        </div>
+                    </div>
+                    <div class="wave-panel-body">
+                        <div id="graphdiv"></div>
+                    </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="confirmStim()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+
+<script src="../node_modules/bootbox/bootbox.min.js"></script>
+<script>
+    $.fn.modal.Constructor.prototype.enforceFocus = function () { };
+    var curHomeworkId = undefined;
+
+    function exampleDelete(projectId) {
+        bootbox.confirm({
+            message: "Sure to delete the project? You can not undo this action.",
+            size: 'small',
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-danger'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-success'
+                }
+            },
+            callback: function (res) {
+                if (res == true) {
+                    window.location.href = "/deleteExample?projectId=" + projectId;
+                }
+            }
+        });
+    }
+    function homeworkDelete(homeworkId) {
+        bootbox.confirm({
+            message: "Sure to delete the homework? You can not undo this action.",
+            size: 'small',
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-danger'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-success'
+                }
+            },
+            callback: function (res) {
+                if (res == true) {
+                    window.location.href = "/deleteHomework?homeworkId=" + homeworkId;
+                }
+            }
+        });
+    }
+
+    function homeworkLoad(homeworkId) {
+        $("#editStimulationList").html("Loading...");
+
+        $.ajax({
+            type: "post",
+            url: "/admin/getStimFileList",
+            data: {
+                homeworkId: homeworkId
+            },
+            dataType: "json",
+            success: function (data) {
+                console.log("--------------------loading StimFileList-----------------------");
+                var innerHTML = "<div>";
+                var stimulateList = data.list;
+                //stimulateList = JSON.parse(stimulateList);
+                if (stimulateList !== undefined){
+                    for(var i = 0; i < stimulateList.length; ++ i){
+                    innerHTML += "<div>"+stimulateList[i];
+                    innerHTML += '<a type="button" class="fa fa-close pull-right" data-dismiss="modal" onclick="stimDelete('+"'"+stimulateList[i]+"'"+')"></a>';
+                    innerHTML += '<a type="button" class="fa fa-edit pull-right" data-dismiss="modal" onclick="stimEdit('+"'"+stimulateList[i]+"'"+')"></a>';
+                    innerHTML += '<a type="button" class="fa fa-eye pull-right" data-dismiss="modal" onclick="stimView('+"'"+stimulateList[i]+"'"+')"></a>';
+                    innerHTML += "</div>";
+                    innerHTML += '<div role="separator" class="divider"></div>';
+                    }
+                }
+                innerHTML += "<div>";
+                innerHTML += '<a type="button" class="fa fa-plus-square " data-dismiss="modal" onclick="stimAdd('+"'"+homeworkId+"'"+')"></a>';
+                innerHTML += "添加新激励文件...";
+                innerHTML += "</div>";
+                innerHTML += "</div>";
+                $("#editStimulationList").html(innerHTML);
+            },
+            error: function (e) {
+                console.log("--------------------error loading homework-----------------------");
+                console.log(e);
+                alert(e.responseText);
+            }
+        });
+        
+        $.ajax({
+            type: "post",
+            url: "/admin/getHomeworkData",
+            data: {
+                homeworkId: homeworkId
+            },
+            dataType: "json",
+            success: function (data) {
+                console.log("--------------------loading homework-----------------------");
+                drawCircuit_simplified(JSON.parse(data.graph));
+                console.log(JSON.stringify(data));
+                curHomeworkId = homeworkId;
+            },
+            error: function (e) {
+                console.log("--------------------error loading homework-----------------------");
+                console.log(e);
+                alert(e.responseText);
+            }
+        });
+    }
+
+    function stimAdd(stimFileName) {
+        $('#stimFileName')[0].value = "";
+        $('#stimNameModal').modal();
+    }
+    function stimDelete(stimFileName) {
+        $.ajax({
+            type: "post",
+            url: "/admin/deleteStimFile",
+            data: {
+                homeworkId: curHomeworkId,
+                stimFileName: stimFileName
+            },
+            dataType: "json",
+            success: function (data) {
+                console.log("--------------------stim file delete-----------------------");
+                console.log(JSON.stringify(data));
+                alert("删除激励文件成功!");
+            },
+            error: function (e) {
+                console.log("--------------------error of stim file-----------------------");
+                console.log(e);
+                alert(e.responseText);
+            }
+        });
+    }
+    function stimEdit(stimFileName) {
+        $.ajax({
+            type: "post",
+            url: "/admin/getStimFile",
+            data: {
+                homeworkId: curHomeworkId,
+                stimFileName: stimFileName
+            },
+            dataType: "json",
+            success: function (data) {
+                console.log("--------------------stim file-----------------------");
+                console.log(data);
+                if ((data.graph !== undefined) && (data.graph !== "")){
+                    loadStimFile(JSON.parse(data.graph));
+                } else {
+                    loadStimFile("");
+                }
+                $('#stimEditModal').modal();
+                $('#stimFileTitle').text(stimFileName);
+            },
+            error: function (e) {
+                console.log("--------------------error of stim file-----------------------");
+                console.log(e);
+                alert(e.responseText);
+            }
+        });
+    }
+
+    function stimView(stimFileName) {
+        window.location.href = "/admin/viewStimResult?homeworkId="+curHomeworkId+"&stimFileName="+stimFileName;
+    }
+
+    function submitStimFilename(){
+        console.log($('#stimFileName')[0].value);
+        if (($('#stimFileName')[0].value == undefined) || ($('#stimFileName')[0].value == "")){
+            alert("文件名不能为空!");
+            return;
+        }
+        var regex = new RegExp("^[a-zA-z0-9]+$");
+        if (!(regex.test($('#stimFileName')[0].value))){
+            alert("文件名中不能含有特殊字符!");
+            return;
+        }
+
+        if ($('#stimFileName')[0].value.length > 10){
+            alert("文件名过长!");
+            return;
+        }
+
+        stimEdit($('#stimFileName')[0].value+".stim");
+    }
+    
+    function confirmStim(){
+        if (curHomeworkId == undefined){
+            alert("undefined homework id!");
+            return;
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/admin/saveStimFile",
+            data: {
+                stimFileData: saveStimFile(),
+                stimFileName: $('#stimFileTitle').text(),
+                homeworkId: curHomeworkId
+            },
+            dataType: "json",
+            success: function (data) {
+                console.log("--------------------save successful-----------------------");
+                console.log(data.description);
+                alert("保存激励文件成功!");
+            },
+            error: function (e) {
+                console.log("--------------------save error-----------------------");
+                console.log(e);
+                alert(e.responseText);
+            }
+        });
+    }
+
+    $("#CreateExampleForm").on("submit", function () {
+        $.ajax({
+            type: "post",
+            url: "/admin/createExamples",
+            data: $("#CreateExampleForm").serialize(),
+            dataType: "json",
+            success: function (data) {
+                console.log("--------------------visit here-----------------------");
+                window.location.href = "/example?projectId=" + data.projectId;
+            },
+            error: function (e) {
+                console.log("--------------------error-----------------------");
+                console.log(e);
+                alert("invalid attributes!");
+            }
+        });
+        return false;
+    });
+
+    $("#CreateHomeworkForm").on("submit", function () {
+        console.log("___________________________HOMEWORK__________________________________");
+        $.ajax({
+            type: "post",
+            url: "/admin/createHomework",
+            data: $("#CreateHomeworkForm").serialize(),
+            dataType: "json",
+            success: function (data) {
+                console.log("--------------------visit here-----------------------");
+                window.location.href = "/admin/example";
+            },
+            error: function (e) {
+                console.log("--------------------error-----------------------");
+                console.log(e);
+                alert(e.responseText);
+            }
+        });
+        return false;
+    });
+
+    $('.dropdown-toggle').dropdown();
+
+</script>
+
+</html>

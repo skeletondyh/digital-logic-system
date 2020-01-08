@@ -1,0 +1,44 @@
+//div#motivate.wave-pane
+div#wave-box.wave-box.panel.panel-default
+  div.box-inner.panel-heading
+    div.form-inline
+      div.form-group
+        label 设置仿真时间
+        div.input-group
+          input#simTime.form-control(placeholder="time", value="200", width="5", type="text", style="width: 100px")
+          div.input-group-addon ns
+      button#startSimulate.btn.btn-default(onclick="onclickStart()") 设置
+      &nbsp; &nbsp; &nbsp; &nbsp;
+      div.form-group
+        label 设置周期信号
+        div.input-group
+          div.input-group-addon 将输入信号
+          input#sigName.form-control(placeholder="输入", width="6em", type="text", style="width: 50px")
+          div.input-group-addon(style="border-left-width: 0") 的周期设置为
+          input#period.form-control(value="10", width="5", type="text", style="width: 50px; border-left-width: 0")
+          div.input-group-addon ns
+      button#plot.btn.btn-default(onclick="onclickPlot()") 生成
+      button#reset.btn.btn-default(onclick="onclickReset()") 重置
+      &nbsp; &nbsp; &nbsp; &nbsp;
+      button#reloadJili.btn.btn-danger.btn-sm.btn-circle0(type="button")
+        span.glyphicon.glyphicon-floppy-disk
+
+  div.wave-panel-body
+    div#graphdiv
+
+div#wave-tabs.wave-tabs
+
+div#rename.modal.fade(tabindex="-1", role="dialog", aria-labelledby="mySmallModalLabel", aria-hidden="true")
+  div.modal-dialog modal-xs
+    div.modal-content
+      div.modal-header
+        button.close(type="button", data-dismiss="modal")
+          span(aria-hidden="true") &times;
+          span.sr-only Close
+        h5.modal-title 修改输入/输出的名称
+      div.modal-body
+        input#new-name.form-control(type="text", maxlength="10", autofocus)
+      div.modal-footer
+        button.btn.btn-default(type="button", data-dismiss="modal") 取消
+        button#save-name.btn.btn-primary(type="button") 保存
+

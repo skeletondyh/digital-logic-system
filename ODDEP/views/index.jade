@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  div.container(role="main")
+    - var title_a = "数字电路在线实验系统"
+    h1= title_a
+    p Welcome to #{title_a}
+    - if (power && power > 1)
+      p: a(href="/admin/") Admin
+    hr
+    h4 注意事项
+    ul
+      li 由于安全和资源分配的原因，所有提交只能且固定模拟20ns

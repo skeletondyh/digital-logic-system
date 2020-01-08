@@ -1,0 +1,172 @@
+// 说明：
+// "draw2d_circuit_switch_HighLow" 是开关，只有一个输出端口 Port，用来代表输入信号
+// "draw2d_circuit_display_Led" 是Led灯，只有一个端口 Port，代表输出信号
+var adder_1bit = {
+	"components": [
+		// vcc, enable signal for chips
+		{
+			"type": "entity.VCC",
+			"id": "vcc", // 67677-y78f-gy7f-ghm7-ghku88h7f6s4
+			"ports": []
+		},
+
+		// gnd, ground signal for chips
+		{
+			"type": "entity.GND",
+			"id": "gnd", // 8huk6-uyf6-rtfh-gtfh-gtyfhg6tfhgt
+			"ports": []
+		},
+
+		// input a0
+		{
+			"type": "draw2d_circuit_switch_HighLow",
+			"id": "switcha0", // -haod-udow-8ddh-8e3edwid9o2h
+			"ports": []
+		},
+
+		// input a1
+		// {
+		// 	"type": "draw2d_circuit_switch_HighLow",
+		// 	"id": "switcha1", // -ashd-aasl-iafj-laci9wdi29de
+		// 	"ports": []
+		// },
+
+		// input b0
+		{
+			"type": "draw2d_circuit_switch_HighLow",
+			"id": "switchb0", // -ash0-i3ed-9jwm-dd9uekdma23s
+			"ports": []
+		},
+
+		// input b1
+		// {
+		// 	"type": "draw2d_circuit_switch_HighLow",
+		// 	"id": "switchb1", // -89hb-aash-ash2-l8inlidi29de
+		// 	"ports": []
+		// },
+
+		// output d0
+		{
+			"type": "draw2d_circuit_display_Led",
+			"id": "d0",
+			"ports": []
+		},
+
+		// output c0(carry)
+		{
+			"type": "draw2d_circuit_display_Led",
+			"id": "c0",
+			"ports": []
+		},
+
+		// nand gates
+		{
+			"type": "chips.C74LS00",
+			"id": "c74ls00", // h-03de-3291-aea8-1d67a355a3b5
+			"userData": {},
+			"ports": [],
+		},
+
+		// not gates
+		{
+			"type": "chips.C74LS04",
+			"id": "c74ls04", // b-5767-8155-c804-14bda7759dc2
+			"userData": {},
+			"ports": [],
+		},
+
+		// xor gate
+		{
+			"type": "chips.C74LS86",
+			"id": "c74ls86", // a-a834-0221-2009-abc2d6bd852a
+			"userData": {},
+			"ports": [],
+		}
+	],
+	"connections": [
+		{
+			"type": "draw2d.Connection",
+			"id": "inputa0", // a-dh27-akdh-uee8-dy2e82en8adu
+			"source": {
+				"node": "switcha0",
+				"port": "Port"
+			},
+			"target": {
+				"node": "c74ls86",
+				"port": "port2"
+			}
+		},
+		{
+			"type": "draw2d.Connection",
+			"id": "inputb0",
+			"source": {
+				"node": "switchb0",
+				"port": "Port"
+			},
+			"target": {
+				"node": "c74ls86",
+				"port": "port1"
+			}
+		},
+		{
+			"type": "draw2d.Connection",
+			"id": "dinput1",
+			"source": {
+				"node": "switcha0",
+				"port": "Port"
+			},
+			"target": {
+				"node": "c74ls00",
+				"port": "port1"
+			}
+		},
+		{
+			"type": "draw2d.Connection",
+			"id": "dinput2",
+			"source": {
+				"node": "switchb0",
+				"port": "Port"
+			},
+			"target": {
+				"node": "c74ls00",
+				"port": "port2"
+			}
+		},
+		{
+			"type": "draw2d.Connection",
+			"id": "outputd0",
+			"source": {
+				"node": "c74ls86",
+				"port": "port3"
+			},
+			"target": {
+				"node": "d0",
+				"port": "Port"
+			}
+		},
+		{
+			"type": "draw2d.Connection",
+			"id": "a0_nand_b0",
+			"source": {
+				"node": "c74ls00",
+				"port": "port3"
+			},
+			"target": {
+				"node": "c74ls04",
+				"port": "port1"
+			}
+		},
+		{
+			"type": "draw2d.Connection",
+			"id": "outputc0",
+			"source": {
+				"node": "c74ls86",
+				"port": "port3"
+			},
+			"target": {
+				"node": "c0",
+				"port": "Port"
+			}
+		}
+	]
+};

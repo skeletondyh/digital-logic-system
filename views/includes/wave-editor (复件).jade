@@ -1,0 +1,15 @@
+div#motivate.tab-pane
+  div.panel.panel-primary(style="padding: 5px")
+    div.panel-heading 激励文件(testbench) - 上传文件优先(.vhd)
+    div.panel-body
+      form#bigbus.form-horizontal(role="form", enctype="multipart/form-data", method="post", action='/upload/motivate')
+        div.form-group
+          label.control-label.col-sm-2 上传文件
+          div.col-sm-10
+            input#motUpl.file.form-control(type="file", data-show-upload="false", name="motivate")
+      div#waveEditor
+      form.form-horizontal(role="form")
+        div.form-group
+          label.control-label.col-sm-2 输入文本
+          div.col-sm-10
+            textarea#stimCode.form-control(rows="25")

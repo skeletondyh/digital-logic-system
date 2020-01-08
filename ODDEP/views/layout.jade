@@ -1,0 +1,38 @@
+doctype html
+html
+  head
+    - if (title)
+      title= title + " - 数字电路在线实验系统"
+    - else 
+      title 数字电路在线实验系统
+
+    //- link(rel="stylesheet", href="//cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css")
+    link(rel="stylesheet", href="/bootstrap/dist/css/bootstrap.min.css")
+    link(rel="stylesheet", href="/stylesheets/style.css")
+    link(rel="stylesheet", href="/stylesheets/navbar-static-top.css")
+    //-link(rel="stylesheet", href="//cdn.bootcss.com/prettify/r298/prettify.min.css")
+    link(rel="stylesheet", href="/stylesheets/sunburst.css")
+    block stylesheets
+
+  body(role="document")
+    //- navigation bar
+    include includes/navbar
+
+    block content
+    - if (needPageFooter)
+      div#major-footer
+        h3: small Author:&nbsp;桃李地下车队
+        - if (needPageFooter.time)
+          h4: small 服务器时间：#{needPageFooter.time}
+
+    //- script(src="//cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js")
+    script(src="/jquery/jquery.min.js")
+    //- script(src="//cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js")
+    script(src="/bootstrap/dist/js/bootstrap.min.js")
+    script(src="/javascripts/layout-jump-prob.js")
+    //-script(src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autoload=true&amp;lang=css")
+    script(src="//cdn.bootcss.com/prettify/r298/prettify.min.js")
+    script(src="//cdn.bootcss.com/prettify/r298/lang-vhdl.min.js")
+    //- script(src="//cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap-theme.min.css")
+
+    block addscript

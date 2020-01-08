@@ -1,0 +1,88 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+draw2d_circuit_hardware_BlocINPUT = draw2d_circuit_hardware_BlocINPUT.extend({
+
+    init: function(attr, setter, getter){
+        var _this = this;
+        this._super(attr, setter, getter);
+
+        this.attr({
+            resizeable:false,
+            "userData.blockID":"-unset-"
+        });
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        this.on("added",function(){
+
+            if(hardware.bloc.isConnected(_this.getUserData().blocId)){
+               _this.layerAttr("indicator",{fill:"#00FF00"});
+            }
+            else{
+               _this.layerAttr("indicator",{fill:"#FF0000"});
+            }
+            hardware.bloc.on("bloc:register",function(device){
+                var blockId = _this.getUserData().blocId;
+                if(blockId === device.blocId){
+                   _this.layerAttr("indicator",{fill:"#00FF00"});
+                }
+            });
+            hardware.bloc.on("bloc:unregister",function(device){
+                var blockId = _this.getUserData().blocId;
+                if(blockId === device.blocId){
+                   _this.layerAttr("indicator",{fill:"#FF0000"});
+                }
+            });            
+        });
+        this.on("removed",function(){
+            hardware.bloc.off("bloc:register");
+            hardware.bloc.off("bloc:unregister");            
+        });
+        
+    },
+    
+    /**
+     * called every '10 [ms]' from the application.
+     * 
+     **/
+    calculate:function()
+    {
+        var blocValue = hardware.bloc.get(this.getUserData().blocId);
+        
+       this.getOutputPort(0).setValue(blocValue);
+    },
+    
+
+    /**
+     *  Called if the simulation mode is starting
+     *  @required
+     **/
+    onStart:function()
+    {
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     *  @required
+     **/
+    onStop:function()
+    {
+    },
+    
+    getParameterSettings: function()
+    {
+        return [
+        {
+            name:"blocId",
+            label:"Bloc Id",
+            property:{
+                type: "blocid"
+        }
+        
+        }];
+    }
+});

@@ -1,0 +1,68 @@
+
+.navbar-static-top {
+    margin-bottom: 0px;
+}
+
+.row .col-sm-4 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.btn #codeSubmit {
+	position: fixed;
+}
+
+.panel.panel-default {
+    margin: 0px;
+}
+
+.workspace {
+    position: absolute;
+    margin: 0px;
+    padding: 0px;
+    left: 0px;
+    right: 0px;
+    overflow: hidden;
+}
+
+.toolbar .btn-group .btn-group {
+    padding: 5px;
+}
+
+.workspace #filetree {
+    /*background-color: #2A2A2A;*/
+    position: absolute;
+    width: 220px;
+    top:0px;
+    bottom: 0px;
+    left: 0px;
+}
+
+.workspace .sash.vertical {
+    position: absolute;
+    width: 5px;
+    left: 220px;
+    top: 0px; 
+    bottom: 0px;
+    color: #000000;
+    cursor: col-resize;
+}
+
+.workspace #toolbar {
+    position: absolute;
+    left: 225px;
+    right: 0px;
+    top: 0px;
+    height: 40px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.workspace #vhdlACE {
+    margin: 0;
+    padding-right: 10px;
+    left: 225px;
+    right: 10px;
+    top: 0px;
+    bottom: 10px;
+}

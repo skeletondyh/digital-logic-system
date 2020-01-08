@@ -1,0 +1,1 @@
+../public/chips/C74LS27.vhd

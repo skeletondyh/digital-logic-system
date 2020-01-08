@@ -1,0 +1,177 @@
+\section{编译仿真与前端仿真}
+
+本部分主要说明本组项目中后端modelsim编译仿真与前端实时仿真模块实现的细节。
+
+
+编译仿真：
+
+我们通过脚本调用modelsim进行vhdl文件的编译仿真。脚本文件位于public/files中，文件名为model.sh，相关的modelsim编译与仿真命令如下：
+
+\begin{table}[h!]
+\centering  
+\caption{modelsim编译仿真命令}  
+\begin{tabular}  
+{>{\columncolor{white}}rc}  
+\toprule[1pt]  
+\rowcolor[gray]{0.9} 命令    &描述\\  
+\midrule  
+{filename=param1 \\ jiliname=param2 }   &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{vhdl源文件名和激励文件文件名分别 为参数1和参数2 } \\
+
+vlib -unix work &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{创建工作库work}   \\  
+vcom filename.vhd jiliname.vhd   &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{编译源文件和激励文件 }    \\ 
+vsim -c -do "vcd add wave /\$\{jiliname\}/*" -do "run 3000ns" -do "quit -sim" -do "q" \$\{jiliname\}   &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{通过激励文件对源文件进行仿真，仿真时间3000ns} 
+\bottomrule[1pt]  
+\end{tabular}  
+\end{table}  
+
+vcd文件解析
+
+modelsim仿真会生成.wlf文件，通过脚本文件可以将.wlf文件转化为通用 的.vcd文件。为了了生成波形图形所需的数据，我们需要对.vcd文件进行解 析。我们使用node.js中的Duplex流对文件进行了处理。主要函数列表如下： 
+
+\begin{table}[h!]
+\centering  
+\caption{modelsim编译仿真命令}  
+\begin{tabular}  
+{>{\columncolor{white}}rcc}  
+\toprule[1pt]  
+\rowcolor[gray]{0.9} 函数名称    &说明 &返回值\\  
+\midrule  
+state (initial, props)   &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{将.vcd 文件分为不同的部 分，将文件的每一行标注为不同的状态（是否为波形数据、是否是仿真时间）}  &{该行文件的状态}\\
+
+vcdStream (opts)  &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{dshengcheng文件流}  &文件流 \\  
+\bottomrule[1pt]  
+\end{tabular}  
+\end{table}  
+
+
+前端仿真：
+
+在本项目中，我们基于陈雅正小组的数电平台一期项目，进一步实现了开关、50Hz时钟、灯泡、74系列芯片、七段数码管、数字译码器、Vcc、GND的完整功能的仿真。前端仿真基于Draw2D库实现，其基本的实现思想是，对于组合电路，使用一个全局的计数器作为时钟，每个时钟周期电平信号都会从每根导线连接的输入端传播到输出端，进而实现信号的传播，而对于时序电路，使用局部变量来模拟其记忆功能。
+
+基本架构：
+前端的仿真的实现思想为继承draw2d库中提供的基类与模板类，通过重载类方法来加入新的功能。基本框架的代码位于View.js中。
+
+
+
+\begin{table}[h!]
+\centering  
+\caption{AnotherLabelInPlaceEditor}  
+\begin{tabular}  
+{>{\columncolor{white}}rc}  
+\toprule[1pt]  
+\rowcolor[gray]{0.9} 方法    &功能描述\\  
+\midrule  
+init(listener, view) &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{调用基类的构造函数，初始化监听器和界面引用} \\
+commit &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{处理提交请求，检查命名的合法性}   \\  
+
+\bottomrule[1pt]  
+\end{tabular}  
+\end{table}  
+
+
+\begin{table}[h!]
+\centering  
+\caption{OrthogonalConnectionCreatePolicy}  
+\begin{tabular}  
+{>{\columncolor{white}}rc}  
+\toprule[1pt]  
+\rowcolor[gray]{0.9} 方法    &功能描述\\  
+\midrule  
+onClick(figure, x, y, shiftKey, ctrlKey) &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{figue为对应的图形对象，x、y坐标，shiftKey, ctrlKey为对应t功能键是否按下，本函数的作用为监听鼠标与键盘的图形操作事件并作出响应} \\
+
+\bottomrule[1pt]  
+\end{tabular}  
+\end{table}  
+
+\begin{table}[h!]
+\centering  
+\caption{tot.View}  
+\begin{tabular}  
+{>{\columncolor{white}}rc}  
+\toprule[1pt]  
+\rowcolor[gray]{0.9} 方法    &功能描述\\  
+\midrule  
+init(app, id, limits) &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{app为当前所在的项目， id为对象的标识符，limits为对象的数量限制，初始化view对象} \\
+
+setZoom(newZoom) &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{newZoom为zoom对象，控制当前画布的缩放} \\
+
+getBoundingBox() &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{获取当前画布中所有元件的包围盒} \\
+
+onDrag() &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{监听拖拽事件} \\
+
+onDrop() &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{监听释放事件} \\
+
+checkLimit() &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{检查元件数量限制} \\
+
+initRemain()/updateRemain()/getRemain() &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{元件剩余数量的操作} \\
+
+simulationStart() &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{开始仿真输入电路} \\
+
+\_calculate &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{原件内部逻辑的计算，需被具体的实例重载} \\
+
+\bottomrule[1pt]  
+\end{tabular}  
+\end{table}  
+
+74系列芯片的前端实现
+以74LS00为例，对74系列芯片的前端实现作说明：74CLS00继承draw2d.SetFigure类，定义一个图形对象，在init()定义其端口、形状、最大伞入伞出数等属性，同时重载calculate()方法，定义电平信号在该芯片内传播的逻辑，进而实现芯片的逻辑功能。
+
+\begin{table}[h!]
+\centering  
+\caption{74LS00}  
+\begin{tabular}  
+{>{\columncolor{white}}rc}  
+\toprule[1pt]  
+\rowcolor[gray]{0.9} 方法    &功能描述\\  
+\midrule  
+init(attr, setter, getter)&\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{调用父类的构造函数，获取attr、setter、getter，同时定义芯片的形状、接口等属性} \\
+
+createShapeElement()&\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{创建芯片的图形} \\
+
+createSet()&\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{创建芯片的Label等信息} \\
+
+getPersistentAttributes()&\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{获取芯片对象的不变属性} \\
+
+setPersistentAttributes()&\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{设置芯片属性} \\
+
+onStart()&\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{监听开始仿真事件} \\
+
+onStop()&\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{监听停止仿真事件} \\
+
+calculate()&\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{重载计算函数，定义芯片内部逻辑} \\
+\bottomrule[1pt]  
+\end{tabular}  
+\end{table}  
+
+
+在portMap.js中，我们实现了前端输入的电路数据到后端输入给VHDL转换模块的电路数据的格式的转换与统一，解决了数据格式的不一致性问题。另外，在portMap中我们还加入了电路连接的合法性检查函数，由于Draw2D框架及之前项目的实现存在一些漏洞，无法直接判断连接的两端是否与端口属性匹配,故需进行额外的逻辑判断，若有连接错误则进行修复。
+
+
+\begin{table}[h!]
+\centering  
+\caption{portMap变量与方法说明}  
+\begin{tabular}  
+{>{\columncolor{white}}rc}  
+\toprule[1pt]  
+\rowcolor[gray]{0.9} 变量/方法    &功能描述\\  
+\midrule  
+chip_map &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{前端芯片名称到后端芯片类型的映射的字典} \\
+port_map &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{每一种前端芯片的端口命名，到后端端口种类与名称的映射的字}   \\  
+port_Map(json): &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{json为前端传入的json格式的电路数据，本函数的作用是将前端传入的电路数据转换成与VHDL转换模块相匹配的格式的后端电路数据，并且调用connection_Correct(),检查数据合法性。}    \\ 
+connection_Correct(json): &\multicolumn{1}{>{\columncolor{white}[0pt][0pt]}c}{json为前端传入的json格式的电路数据，本函数的作用是检查每一个connection对象是否合法，即connection的source与destination是否与端口的属性相匹配，若不匹配则报错或进行更正。} 
+\bottomrule[1pt]  
+\end{tabular}  
+\end{table}  
+
+\iffalse
+chip_map : 前端芯片名称到后端芯片类型的映射的字典
+port_map : 每一种前端芯片的端口命名，到后端端口种类与名称的映射的字典
+
+function port_Map(json):
+json为前端传入的json格式的电路数据，本函数的作用是将前端传入的电路数据转换成与VHDL转换模块相匹配的格式的后端电路数据，并且调用connection_Correct(),检查数据合法性。
+
+function connection_Correct(json) : 
+json为前端传入的json格式的电路数据，本函数的作用是检查每一个connection对象是否合法，即connection的source与destination是否与端口的属性相匹配，若不匹配则报错或进行更正。
+\fi
+
+\end{document}

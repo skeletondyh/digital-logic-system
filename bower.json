@@ -1,0 +1,32 @@
+{
+  "name": "prj6",
+  "description": "Online Experiment Platform",
+  "main": "",
+  "authors": [
+  ],
+  "license": "MIT",
+  "keywords": [
+    "js",
+    "html5",
+    "css"
+  ],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "draw2d": "^6.1.65",
+    "draw2d-shapes": "^1.0.178",
+    "mousetrap": "^1.6.0",
+    "bootstrap": "^3.3.7",
+    "jstree": "^3.3.3",
+    "d3": "^3.5.17",
+    "locstor": "^1.0.7",
+    "bootstrap-slider": "*"
+  }
+}

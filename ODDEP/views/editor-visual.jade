@@ -1,0 +1,125 @@
+html
+  head
+    title= title + " - 数字实验在线系统"
+    
+    link(rel="stylesheet", href="/Ionicons/css/ionicons.min.css")
+    link(rel="stylesheet", href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css")
+    link(rel="stylesheet", href="/stylesheets/style.css")
+    link(rel="stylesheet", href="/stylesheets/navbar-static-top.css")
+    link(rel="stylesheet", href="/lib/aristo/jquery-ui-1.8.16.custom.css")
+    link(rel="stylesheet", href="/stylesheets/visual-editor.css")
+    link(rel="stylesheet", href="/stylesheets/probe_window.css")
+    link(rel="stylesheet", href="/stylesheets/toolbar_editor.css")
+    //- ToDo: Customize vhdl editor's UI with bootstrap to adapt to more device size
+    link(rel="stylesheet", href="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css")
+    link(rel="stylesheet", href="/stylesheets/contextmenu.css")
+    link(rel="stylesheet", href="/stylesheets/sunburst.css")
+
+
+body(role="document")
+  include includes/navbar
+  div#layout
+    div.container-fluid(style="margin:0px;padding:0px;")
+      div.row#tabNav
+        div.col-sm-4
+          ul#editorTab.nav.nav-pills(style="padding-left:5px;")
+            li.active: a(href="#visual", data-toggle="tab") 编辑&nbsp;
+              span.glyphicon.glyphicon-forward
+              li#Jili: a(href="#motivate", data-toggle="tab") 激励&nbsp;
+                span.glyphicon.glyphicon-forward
+              button#simulateBtn.btn.btn-danger Simulate
+              a.btn(type="button", href="/submit?projectId=" + "#{ projectId }") History
+              //button#jumpToVHDL.btn.btn-danger toVHDL
+        div.col-sm-4
+          form.form-inline(role="form")
+            div.form-group
+              label(for="tagname") 标签：
+              input#tagname.form-control(type="text", value="新建")
+      div#editorTabContent.tab-content
+        div#visual.tab-pane.in.active
+          include includes/canvas
+          include includes/wave-editor
+  btn.submit-btn.btn.btn-lg.btn-danger 提交
+  include includes/modal-vhdl
+
+block addscript
+  script(src="//cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js")
+  //- draw2d library dependencies
+  include includes/draw2d_js
+  script(src="//cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js")
+  script(src="/javascripts/layout-jump-prob.js")
+  script(src="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js")
+  script(src="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js")
+  script(src="https://cdn.rawgit.com/eligrey/Blob.js/0cef2746414269b16834878a8abc52eb9d53e6bd/Blob.js",  async="" )
+  script(src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js", async="")
+  script(src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js")
+  //- script(src="/javascripts/editor-draw.js")
+  //- script(src="/chips/json/1bit_adder.json")
+  script(src="/chips/json/circuit_adder_1bit.js")
+  script(src="/javascripts/editor-toVHDL.js")
+  script(src="/javascripts/editor-draw-submit.js")
+  script(src="/javascripts/editor-draw-tab.js")
+  script(src="/javascripts/editor-submit.js")
+
+  //- draw2d Classes for the GUI editor application
+  script(src="/javascripts/draw2d/Application.js")
+  script(src="/javascripts/draw2d/Palette.js")
+  script(src="/javascripts/draw2d/ConnectionSelectionFeedbackPolicy.js")
+  script(src="/javascripts/draw2d/DropInterceptorPolicy.js")
+  script(src="/javascripts/draw2d/ConnectionRouter.js")
+  script(src="/javascripts/draw2d/View.js")
+  script(src="/javascripts/draw2d/Toolbar.js")
+  script(src="/javascripts/draw2d/circuit/test.circuit")
+  script(src="/javascripts/draw2d/ProtectCircuit.js")
+  script(src="/javascripts/draw2d/EditEditPolicy.js")
+  script(src="/javascripts/draw2d/SimulationEditPolicy.js")
+
+  script.
+    var app;
+    var showJSON = false;
+    var pid= #{ pid }; // Get Problem ID from router render call
+    // Get Problem Limit of Chips
+    var limits = {};
+    var elements = {};
+
+    $(window).load( function(){
+      $.get("/problem/"+ pid +"/limits", function onSuccess(res, status, xhr) {
+        limits = res.data;
+        if (limits == null) {
+            alert("Error: no problem limit got");
+            return;
+        }
+        for (element in limits) {
+            elements[element] = {};
+            elements[element].limit = limits[element];
+        }
+        app = new tot.Application(pid, elements);
+        if (defaultCircuit !== null) {
+            var jsonDocument = JSON.parse(defaultCircuit);
+            app.view.load(jsonDocument);
+        }
+      }, "json");
+      
+      //- app.load(circuit_adder_1bit);
+      if (showJSON === true) {
+        displayJSON(app.view);
+
+        // add an event listener to the Canvas for change notifications.
+        // We just dump the current canvas document into the DIV
+        //
+        app.view.getCommandStack().addEventListener(
+          function(e){
+            if(e.isPostChangeEvent()){
+                displayJSON(app.view);
+          }
+        });
+      }
+    });
+    function displayJSON(canvas){
+      var writer = new draw2d.io.json.Writer();
+      writer.marshal(canvas, function(json){
+          $("#json").html("<pre>"+JSON.stringify(json,null,2)+"<pre>");
+      });
+    }
+  script(src="//cdn.bootcss.com/prettify/r298/prettify.min.js")
+  script(src="//cdn.bootcss.com/prettify/r298/lang-vhdl.min.js")

@@ -1,0 +1,35 @@
+.wave-box{
+
+    left:500px;
+    height:300px;
+    /*background-color: red;*/
+    width: auto;
+    display: inline-block;
+    margin: 0;
+}
+.box-inner {
+    /*display: inline-block;*/
+    /*background-color: white;*/
+    width:100%;
+    top: 0px;
+    bottom: 0px;
+    -webkit-overflow-scrolling: touch;
+}
+.wave-tabs {
+    position:absolute;
+    bottom:0px;
+    left:12px;
+}
+.wave-panel-body {
+    height: calc(100% - 55px);
+    height:-moz-calc(100% - 55px);
+    height:-webkit-calc(100% - 55px);
+    display: inline-block;
+    padding: 8px 12px
+}
+
+#motivate .tab-pane {
+    background-color: #ADD;
+    height: 0;
+    width: 0;
+}

@@ -1,0 +1,95 @@
+extends layout
+
+block content
+  style(type="text/css").
+    #editor {
+      position: relative;
+      top:0;right:0;bottom:0;left:0;
+      width:100%;height:500px;
+      margin-top:5px;
+    }
+    #sourceInput {
+      width: 60%;
+    }
+    #submitbtn {
+      position: fixed;
+      right: 25px;
+      top: 80px;
+    }
+  div.container-fluid
+    h2= pid
+    div.well.well-sm
+      label: span Title：
+      input#titleInput(type='text', value="#{data.title}")
+    div.well.well-sm
+      label: span Source：
+      input#sourceInput(type='text', value="#{data.source||''}")
+    div.panel.panel-danger
+      div.panel-heading 限制
+      div.panel-body
+        div
+          label.radio-inline
+            - if (limits[0])
+              input#typeVisual(type="radio", name="editType", value="图形化编辑")
+            - else
+              input#typeVisual(type="radio", name="editType", value="图形化编辑", checked)
+            |图形化类型
+          label.radio-inline
+            - if (limits[0])
+              input#typeCode(type="radio", name="editType", value="代码编辑", checked)
+            - else 
+              input#typeCode(type="radio", name="editType", value="代码编辑")
+            |代码类型
+        form#form4visual.form-horizontal
+          each name in limitNames
+            div.form-group
+              label.col-sm-4.control-label(for="limit#{name}") #{name}：
+              div.col-sm-6
+                input.form-control(id="limit#{name}", type="number", placeholder="默认99", name="#{name}", data-type="limit", value="#{limits[name]||''}")
+    - if (check)
+      div.panel.panel-primary
+        div.panel-heading 标准文件
+        div.panel-body
+          form.form-horizontal(enctype="multipart/form-data", action="/upload/std/motivate/#{pid}", method="post", target="stdmotres")
+            div.form-group
+              label.col-sm-2.control-label(for="stdmotivate") 标准激励文件(.vhd)
+              div.col-sm-8
+                input#stdmotivate.form-control(type="file", name="stdfile")
+              div.col-sm-2
+                iframe(name="stdmotres")
+          form.form-horizontal(enctype="multipart/form-data", action="/upload/std/input/#{pid}", method="post", target="stdinpres")
+            div.form-group
+              label.col-sm-2.control-label(for="stdinput") 标准输入文件(.in)
+              div.col-sm-8
+                input#stdinput.form-control(type="file", name="stdfile")
+              div.col-sm-2
+                iframe(name="stdinpres")
+          form.form-horizontal(enctype="multipart/form-data", action="/upload/std/answer/#{pid}", method="post", target="stdansres")
+            div.form-group
+              label.col-sm-2.control-label(for="stdanswer") 标准输出文件(.ans)
+              div.col-sm-8
+                input#stdanswer.form-control(type="file", name="stdfile")
+              div.col-sm-2
+                iframe(name="stdansres")
+    div.panel.panel-primary
+      div.panel-heading 描述
+      div.panel-body
+        div
+          label.radio-inline
+            input#writeHtml(type="radio", name="filetype", value="html", checked) 
+            |HTML文档
+          label.radio-inline
+            input#writePlain(type="radio", name="filetype", value="plain") 
+            |纯文本
+        div#editor= data.description
+    button#submitbtn.btn.btn-lg.btn-danger 确认
+
+block addscript
+  script(src="http://cdn.bootcss.com/ace/1.2.5/ace.js", type="text/javascript", charset="utf-8")
+  script(src="http://cdn.bootcss.com/ace/1.2.5/ext-language_tools.js")
+  script(src="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js")
+  script(src="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js")
+  script(src="/javascripts/problem-edit.js")
+
+block stylesheets
+  link(rel="stylesheet", href="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css")

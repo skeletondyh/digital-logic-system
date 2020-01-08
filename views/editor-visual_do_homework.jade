@@ -1,0 +1,281 @@
+html
+  head
+    title= pathNav[0].name
+    
+    link(rel="stylesheet", href="/Ionicons/css/ionicons.min.css")
+    link(rel="stylesheet", href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css")
+    link(rel="stylesheet", href="/stylesheets/style.css")
+    link(rel="stylesheet", href="/stylesheets/ODDEP_stylesheets/navbar-static-top.css")
+    link(rel="stylesheet", href="/lib/aristo/jquery-ui-1.8.16.custom.css")
+    link(rel="stylesheet", href="/stylesheets/ODDEP_stylesheets/visual-editor.css")
+    link(rel="stylesheet", href="/stylesheets/ODDEP_stylesheets/probe_window.css")
+    link(rel="stylesheet", href="/stylesheets/ODDEP_stylesheets/toolbar_editor.css")
+    link(rel="stylesheet", href="/stylesheets/wave_editor.css")
+    //- ToDo: Customize vhdl editor's UI with bootstrap to adapt to more device size
+    link(rel="stylesheet", href="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css")
+    link(rel="stylesheet", href="/stylesheets/ODDEP_stylesheets/contextmenu.css")
+    link(rel="stylesheet", href="/stylesheets/ODDEP_stylesheets/sunburst.css")
+    script(src="/public/js/animation.js")
+    link(rel="stylesheet" href="/public/stylesheets/circleBtn.css")
+    link(rel="stylesheet" href="/public/stylesheets/buttons.css")
+
+body(role="document" class="frosted-glass" onload="clearInto()" onunload="blurOut()")
+  include includes/navbar
+  div#layout
+    div#toolbar.toolbar
+      span.group
+        //a.span#editorTab.ion-ios-compose-outline.icon(href="#visual", data-toggle="tab", data-placement="top" title="Edit Circuit")
+        a#Jili.span.ion-ios-settings.icon(href="#motivate", data-toggle="tab", data-placement="top" title="Edit Wave")
+        //span#fileUpload.ion-ios-upload-outline.icon(data-toggle="tooltip", data-placement="top" title="Load")
+        span
+        //span#fileSave.ion-ios-download-outline.icon(data-toggle="tooltip", data-placement="top" title="Save")
+        //span#fileSaveAs.ion-ios-cloud-download-outline.icon(data-toggle="tooltip", data-placement="top" title="Save As")
+        span#submitGraph.ion-ios-upload-outline.icon(data-toggle="tooltip", data-placement="top" title="SubmitGraph")
+        span#simulateBtn.ion-ios-play-outline.icon(data-toggle="tooltip", data-placement="top" title="Simulate")
+        span#submitHomework.ion-ios-checkmark-outline.icon(data-toggle="tooltip", data-placement="top" title="SubmitHomework")
+        a.span#historyBtn.ion-ios-eye-outline.icon(href="/submit?projectId=" + "#{ projectId }", data-toggle="tooltip", data-placement="top" title="History")
+      span.group
+        span#editDelete.ion-ios-close-empty.icon.disabled
+
+      span.group
+        span#editUndo.ion-ios-arrow-left.icon.disabled
+        span#editRedo.ion-ios-arrow-right.icon.disabled
+      
+      span.group.simulationBase(style='display: none;')
+        label Simulation Speed
+        input#simulationBaseTimer(type='text', value='100', data-slider-min='50', data-slider-max='500', data-slider-step='1', data-slider-value='100', data-slider-handle='round', data-slider-tooltip='hide', data-slider-id='simulationBaseTimerSlider', data-slider-orientation='horizontal')
+
+
+      a#simulationStartStop.morph_btn.play(href='#')
+        span
+          span.s1
+          span.s2
+          span.s3
+    
+    div.container-fluid(style="margin:0px;padding:0px;")
+      //div.row#tabNav
+        div.col-sm-4
+          ul#editorTab.nav.nav-pills(style="padding-left:5px;")
+            li.active: a(href="#visual", data-toggle="tab") 编辑&nbsp;
+              span.glyphicon.glyphicon-forward
+              li#Jili: a(href="#motivate", data-toggle="tab") 激励&nbsp;
+                span.glyphicon.glyphicon-forward
+              button#simulateBtn.btn.btn-danger Simulate
+              a.btn(type="button", href="/submit?projectId=" + "#{ projectId }") History
+              button#jumpToVHDL.btn.btn-danger toVHDL
+
+        div.col-sm-4
+          form.form-inline(role="form")
+            div.form-group
+              //label(for="tagname") 标签：
+              //input#tagname.form-control(type="text", value="新建")
+      div#editorTabContent.tab-content
+        div#visual.tab-pane.in.active
+          include includes/canvas
+        //include includes/wave-editor
+  //btn.submit-btn.btn.btn-lg.btn-danger 提交
+  include includes/modal-vhdl
+
+  div#wave-container.box.panel.panel-default
+    include includes/wave-editor
+block addscript
+  script(src="//cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js")
+  //- draw2d library dependencies
+  include includes/draw2d_js
+  script(src="//cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js")
+  script(src="/javascripts/layout-jump-prob.js")
+  script(src="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js")
+  script(src="http://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js")
+  script(src="https://cdn.rawgit.com/eligrey/Blob.js/0cef2746414269b16834878a8abc52eb9d53e6bd/Blob.js",  async="" )
+  script(src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js", async="")
+  script(src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js")
+  //- script(src="/javascripts/editor-draw.js")
+  //- script(src="/chips/json/1bit_adder.json")
+  script(src="/chips/json/circuit_adder_1bit.js")
+  script(src="/javascripts/editor-toVHDL.js")
+  script(src="/javascripts/editor-draw-submit.js")
+  script(src="/javascripts/editor-draw-tab.js")
+  script(src="/javascripts/editor-submit.js")
+
+  //- draw2d Classes for the GUI editor application
+  script(src="/javascripts/draw2d/Application.js")
+  script(src="/javascripts/draw2d/Palette.js")
+  script(src="/javascripts/draw2d/ConnectionSelectionFeedbackPolicy.js")
+  script(src="/javascripts/draw2d/DropInterceptorPolicy.js")
+  script(src="/javascripts/draw2d/ConnectionRouter.js")
+  script(src="/javascripts/draw2d/View.js")
+  script(src="/javascripts/draw2d/Toolbar.js")
+  //script(src="/javascripts/draw2d/circuit/test.circuit")
+
+  script(src="/js/wave.js")
+  script(type="text/javascript", src="/dygraphs/dygraph-combined-dev.js")
+  script(type="text/javascript", src="/dygraphs/extras/synchronizer.js")
+  script(src="js/konva.min.js")
+
+  //- script(src="/javascripts/draw2d/ProtectCircuit.js")
+  script(src="/javascripts/draw2d/EditEditPolicy.js")
+  script(src="/javascripts/draw2d/SimulationEditPolicy.js")
+  script(src="/javascripts/draw2d/portMap.js")
+  script.
+    var app;
+    
+    var showJSON = false;
+    var pid= "#{ projectId }"; // Get Problem ID from router render call
+    // Get Problem Limit of Chips
+    var c74s = !{ JSON.stringify(c74s) };
+    var circuitDescribe = JSON.stringify(!{ circuit });
+    var elements = {};
+    var chipNames = new Array ("draw2d_circuit_switch_HighLow",
+                      "draw2d_circuit_display_Led",
+                      "draw2d_circuit_switch_PushButton",
+                      "draw2d_circuit_pulse_50hz",
+                      "Vcc",
+                      "GND",
+                      "C74LS00",
+                      "C74LS04",
+                      "C74LS11",
+                      "C74LS14",
+                      "C74LS20",
+                      "C74LS27",
+                      "C74LS86",
+                      "C74LS90",
+                      "C74LS161",
+                      "draw2d_circuit_counter_BCDCounter",
+                      "draw2d_circuit_decoder_BCDto7Seg",
+                      "draw2d_circuit_display_7Segment");
+
+    $("#reloadJili").click(function(){
+      reloadJili(pid,"Project");
+    });
+
+    $("#simulateBtn").click(function(){
+      $.ajax({
+          type: "post",
+          url: "/file/simulate",
+          data:{
+              projectId: pid,
+              projectType: "Project"
+          },
+          dataType: 'json',
+          success: function(data){
+              console.log(data);
+              alert(data.message);
+              //$('.alert').remove();
+              //$('#fileUpload').append(generateNewAlertBox(data.compileStatus, data.message));
+          },
+          error: function (e) {
+              alert(e.message);
+              //$('.alert').remove();
+              //$('#fileUpload').append(generateNewAlertBox("danger", e.message));
+          }
+      });
+      //$('.alert').remove();
+      //$('#fileUpload').append(generateNewAlertBox("info", "Compiling and simulation processing"));
+    });
+
+    $("#submitHomework").click(function(){
+      
+      $.ajax({
+          type: "post",
+          url: "/file/submitHomework",
+          data:{
+              projectId: pid,
+              projectType: "Project"
+          },
+          dataType: 'json',
+          success: function(data){
+              console.log(data);
+              alert(data.message);
+          },
+          error: function (e) {
+              alert(e.message);
+          }
+      });
+      
+    });
+
+    $("#Jili").click(function(){
+      console.log("#Jili");
+      $("#wave-container").fadeToggle("middle");
+      var writer = new draw2d.io.json.Writer();
+      writer.marshal(app.view, function(json){
+        if ((json === "") || (json === undefined) || (json === null)) {
+          graph = {};
+        } else {
+          graph = portMap(connection_Correct(json));
+        }
+        drawCircuit_simplified(graph);
+      });
+    });
+
+    /*
+    var toggleOn = false;
+    $('#edit-toggle').click(function() {
+
+        if (toggleOn) {
+            toggleOn = false;
+            $('#wave-tabs').animate({'bottom':'0'},300);
+            $('#wave-box').animate({'bottom':'-50%'},300)
+        } else {
+            toggleOn = true;
+            $('#wave-tabs').animate({'bottom':'50%'},300);
+            $('#wave-box').animate({'bottom':'0'},300);
+        }
+        this.blur();
+    });
+    */
+
+    for (x in chipNames){
+        elements[chipNames[x]] = {};
+        elements[chipNames[x]].limit = 99;
+    }
+
+    $(window).load( function(){
+        Object.keys(c74s).forEach(function(chip, index, array){
+            for (x in chipNames){
+                if ("C"+c74s[chip].name === chipNames[x]){
+                elements["C"+c74s[chip].name].limit = c74s[chip].number;
+                }
+            }
+
+        });
+        
+        app = new tot.Application(pid, elements);
+        if ((circuitDescribe !== "") && (circuitDescribe !== undefined)) {
+            var jsonDocument = JSON.parse(circuitDescribe);
+            app.view.load(jsonDocument);
+        }
+      
+        var writer = new draw2d.io.json.Writer();
+        writer.marshal(app.view, function(json){
+          if ((json === "") || (json === undefined) || (json === null)) {
+            graph = {};
+          } else {
+            graph = portMap(connection_Correct(json));
+          }
+          drawCircuit_simplified(graph);
+        });
+
+      //- app.load(circuit_adder_1bit);
+      if (showJSON === true) {
+        displayJSON(app.view);
+
+        // add an event listener to the Canvas for change notifications.
+        // We just dump the current canvas document into the DIV
+        //
+        app.view.getCommandStack().addEventListener(
+          function(e){
+            if(e.isPostChangeEvent()){
+                displayJSON(app.view);
+          }
+        });
+      }
+    });
+    function displayJSON(canvas){
+      var writer = new draw2d.io.json.Writer();
+      writer.marshal(canvas, function(json){
+          $("#json").html("<pre>"+JSON.stringify(json,null,2)+"<pre>");
+      });
+    }
+  script(src="//cdn.bootcss.com/prettify/r298/prettify.min.js")
+  script(src="//cdn.bootcss.com/prettify/r298/lang-vhdl.min.js")
