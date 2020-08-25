@@ -24,7 +24,7 @@
     "express-session": "^1.14.1",
     "file-saver": "^1.3.3",
     "gentelella": "*",
-    "highcharts": "^6.0.3",
+    "highcharts": "^8.2.0",
     "jade": "~1.11.0",
     "js-md5": "^0.4.1",
     "konva": "^1.2.2",
